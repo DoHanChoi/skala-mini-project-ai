@@ -11,15 +11,18 @@ incident: plan(MCP Prompt 절차 반영) → gate(권위 게이트) → research
 import asyncio
 import json
 import time
+from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
 from typing import Any, TypedDict
+from uuid import uuid4
 
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, StateGraph
 from langsmith import traceable
 
 from .deps import SupervisorDeps
+from .evidence import monitoring_evidence, runbook_evidence
 from .retry import with_retry
 
 
@@ -56,6 +59,8 @@ class AgentState(TypedDict, total=False):
     tasks: list[dict]
     gate_removed: int
     collected: list[dict]
+    request_id: str
+    evidence: list[dict]
     replan_rounds: int
     retry_count: int
     parallel_elapsed: float
@@ -77,7 +82,8 @@ async def route_node(state: AgentState, deps: SupervisorDeps) -> dict:
     """Wave 5 — 모든 쿼리가 무거운 파이프라인을 탈 필요는 없다."""
     result, usage = deps.fast_llm.route(state["query"])
     event = {"type": "RouteDecided", "route": result["route"]}
-    return {"route": result["route"], "needs_analysis": result["needs_analysis"],
+    provenance = {"request_id": uuid4().hex, "evidence": []} if result["route"] == "incident" else {}
+    return {**provenance, "route": result["route"], "needs_analysis": result["needs_analysis"],
             "cost_usd": _cost(state, usage),
             "events": state.get("events", []) + [event]}
 
@@ -146,6 +152,7 @@ async def research_node(state: AgentState, deps: SupervisorDeps) -> dict:
                 [{"type": "ResearchSkipped", "reason": "pending research task 0개"}]}
 
     retry_total = state.get("retry_count", 0)
+    request_id = state.get("request_id") or uuid4().hex
 
     # URI를 코드에 하드코딩하지 않는다. 여러 MCP 서버가 연결돼 있고 그중 어느 서버가
     # "get_incident_runbook" resource를 제공하는지 모른다고 가정하고, 먼저 연결된
@@ -157,16 +164,27 @@ async def research_node(state: AgentState, deps: SupervisorDeps) -> dict:
             "get_incident_runbook")
 
     async def run_one(idx: int) -> dict:
+        """한 태스크의 조회 성공 결과와 독립적인 원본 스냅샷을 함께 반환한다."""
         task = tasks[idx]
         await asyncio.sleep(0.35)   # 태스크당 고정 지연 — 병렬 효과를 실측하기 위함
         if task["kind"] == "monitoring":
             data, retries = await with_retry(
                 deps.mcp.call_tool, "get_monitoring_status",
-                {"system_name": task["target"]})
-            return {"idx": idx, "source": "monitoring", "data": data, "retries": retries}
+                {"system_name": task["target"]}, server="ops")
+            snapshot = monitoring_evidence(
+                request_id=request_id, task_index=idx, task_id=task["id"],
+                target=task["target"], server="ops",
+                retrieved_at=datetime.now(timezone.utc).isoformat(), data=data)
+            return {"idx": idx, "source": "monitoring", "data": data, "retries": retries,
+                    "evidence": snapshot.model_dump()}
         uri = runbook_uri_template.format(incident_type=task["target"])
         data = await deps.mcp.read_resource(uri, server=runbook_server)
-        return {"idx": idx, "source": "runbook", "data": data, "retries": 0}
+        snapshot = runbook_evidence(
+            request_id=request_id, task_index=idx, task_id=task["id"],
+            target=task["target"], server=runbook_server, uri=uri,
+            retrieved_at=datetime.now(timezone.utc).isoformat(), data=data)
+        return {"idx": idx, "source": "runbook", "data": data, "retries": 0,
+                "evidence": snapshot.model_dump()}
 
     started = time.perf_counter()
     results = await asyncio.gather(*(run_one(i) for i in research_indices))
@@ -174,15 +192,18 @@ async def research_node(state: AgentState, deps: SupervisorDeps) -> dict:
 
     new_tasks = [dict(t) for t in tasks]
     collected = list(state.get("collected", []))
+    evidence = list(state.get("evidence", []))
     events = list(state["events"])
     for r in results:
         new_tasks[r["idx"]]["status"] = "done"
         collected.append({"source": r["source"], "data": r["data"]})
+        evidence.append(r["evidence"])
         retry_total += r["retries"]
         events.append({"type": "TaskCompleted", "id": new_tasks[r["idx"]]["id"],
                        "source": r["source"], "target": new_tasks[r["idx"]]["target"],
                        "retries": r["retries"]})
-    return {"tasks": new_tasks, "collected": collected, "retry_count": retry_total,
+    return {"tasks": new_tasks, "collected": collected, "evidence": evidence,
+            "request_id": request_id, "retry_count": retry_total,
             "parallel_elapsed": elapsed, "events": events}
 
 

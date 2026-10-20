@@ -28,9 +28,10 @@ def main():
         shutil.copytree(root / "tests", target / "tests",
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         print(f"Baseline commit: {baseline}", flush=True)
-        # Same interpreter and fixture, separate source directory and temp DBs.
+        # Keep the A-01 suites runnable when new feature suites require newer code.
         result = subprocess.run(
-            [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], cwd=target)
+            [sys.executable, "-m", "unittest", "tests.test_baseline", "tests.test_api_baseline", "-v"],
+            cwd=target)
         return result.returncode
 
 
