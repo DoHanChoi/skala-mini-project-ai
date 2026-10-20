@@ -30,7 +30,7 @@
 
 - 이슈: [#3](https://github.com/DoHanChoi/skala-mini-project-ai/issues/3)
 - 브랜치: `chore/issue-3-coderabbit`
-- PR: 생성 후 연결한다.
+- PR: [#4](https://github.com/DoHanChoi/skala-mini-project-ai/pull/4)
 - 산출물: `.coderabbit.yaml`, CodeRabbit 운영 문서, AGENTS·README의 리뷰 단계, 승인 기록.
 - 앱 연결: 사용자가 본인 인증을 완료한 뒤, 개인 계정의 CodeRabbit 설치와 `Only select repositories`에서 `DoHanChoi/skala-mini-project-ai` 한 개만 연결된 상태를 확인했다.
 - 로컬 검증: 공식 JSON Schema 검증과 Markdown 상대 링크 검사, `git diff --check` 통과. 실제 봇 리뷰는 설정 PR에서 확인한다.
