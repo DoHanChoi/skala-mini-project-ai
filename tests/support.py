@@ -56,9 +56,10 @@ class FixtureMCP:
         assert name == "incident_analysis_prompt" and server == "fixture-ops"
         return f"시스템: {arguments['system_name']}\n증상: {arguments['symptom']}"
 
-    async def call_tool(self, name, arguments):
+    async def call_tool(self, name, arguments, server="ops"):
         """고정 모니터링을 조회하고 미설정 대상과 예상 밖 호출을 거부한다."""
         assert name == "get_monitoring_status", name
+        assert server == "ops", server
         self.calls.append((name, copy.deepcopy(arguments)))
         if self.transient_pending:
             self.transient_pending = False
