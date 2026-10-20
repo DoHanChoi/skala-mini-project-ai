@@ -34,6 +34,9 @@
 - 산출물: `.coderabbit.yaml`, CodeRabbit 운영 문서, AGENTS·README의 리뷰 단계, 승인 기록.
 - 앱 연결: 사용자가 본인 인증을 완료한 뒤, 개인 계정의 CodeRabbit 설치와 `Only select repositories`에서 `DoHanChoi/skala-mini-project-ai` 한 개만 연결된 상태를 확인했다.
 - 로컬 검증: 공식 JSON Schema 검증과 Markdown 상대 링크 검사, `git diff --check` 통과. 실제 봇 리뷰는 설정 PR에서 확인한다.
+- 실제 리뷰: [CodeRabbit 리뷰](https://github.com/DoHanChoi/skala-mini-project-ai/pull/4#pullrequestreview-5581216583)가 `a5f1be4` 커밋의 변경 파일 5개를 검토했고 한국어 수정 의견 1건을 제출했다. 저장소 설정 적용과 자동 리뷰 동작을 확인했다.
+- 지적 처리: 공식 문서로 작성자 승인 우회 옵션의 기본값을 확인하고 `allow_author_approval: false`를 추가했다. 수정 커밋의 자동 재리뷰 완료를 머지 전에 확인한다.
+- 사후 정리: 머지·이슈 종료·브랜치 삭제는 재리뷰 통과 후 수행한다. 실제 최종 상태는 PR #4와 이슈 #3 및 Git에서 확인하며, 완료 전에는 완료로 기록하지 않는다.
 - 완료 기준: 공식 스키마 검증, 실제 CodeRabbit 리뷰 확인 및 지적 처리, 최신 커밋 리뷰 완료 후 머지·종료·브랜치 정리.
 - 앱 설치나 리뷰가 완료되지 않으면 PR을 머지하지 않고 이슈를 열린 상태로 유지한다.
 
