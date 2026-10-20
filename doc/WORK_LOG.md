@@ -77,6 +77,7 @@
 - 승인: 다음 이슈 진행 및 첫 CodeRabbit 리뷰 대기를 최소 10분으로 늘리라는 사용자 요청.
 - 이슈: [#9](https://github.com/DoHanChoi/skala-mini-project-ai/issues/9).
 - 작업 브랜치: `feat/issue-9-diagnosis-validation`.
+- PR: [#10](https://github.com/DoHanChoi/skala-mini-project-ai/pull/10).
 - 산출물: Observation·DiagnosisDraft·검증 결과 계약, 순수 검증기·원본 기반 렌더링, [진단 검증 문서](VALIDATION.md), 검증·표시 테스트 22개.
 - 검증 범위: 구조·시스템·측정 항목·원본 값·단위·요청별 출처 연결. 가설·조치의 의미나 실제 원인을 자동 판정하지 않는다.
 - 검증 결과: 전체 54개와 기준 A-01 테스트 15개 통과. 고정 후보 초안 정상 6개 통과·오류 18개 거부, 파싱·중복 키·비정상 수치·타 요청/중복/훼손 근거, 입력 비변경·시도 상한·실패 초안 미노출을 확인했다.
