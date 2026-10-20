@@ -1,0 +1,902 @@
+{
+  "fixture_version": 1,
+  "baseline_commit": "447db631b079f6c8b5e67c3b2bfce4dbaf59169f",
+  "request_id": "fixture-request-a",
+  "query": "payments-service 장애 진단해줘",
+  "evidence": [
+    {
+      "id": "mon-payments",
+      "request_id": "fixture-request-a",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "payments-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 55.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": [
+          "CPU 91% (threshold 80%)",
+          "payments-service-3 instance responding slow"
+        ]
+      }
+    },
+    {
+      "id": "mon-web",
+      "request_id": "fixture-request-a",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": []
+      }
+    },
+    {
+      "id": "mon-cache",
+      "request_id": "fixture-request-a",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "cache-service",
+        "status": "degraded",
+        "cpu_percent": 42.0,
+        "memory_percent": 89.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": [
+          "memory usage climbing steadily over 6h",
+          "heap near limit"
+        ]
+      }
+    },
+    {
+      "id": "mon-unknown",
+      "request_id": "fixture-request-a",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "billing-service",
+        "status": "unknown",
+        "cpu_percent": 0.0,
+        "memory_percent": 0.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": [
+          "System 'billing-service' not found in monitoring"
+        ]
+      }
+    },
+    {
+      "id": "mon-missing",
+      "request_id": "fixture-request-a",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "log-service",
+        "status": "degraded",
+        "memory_percent": 35.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": [
+          "disk space low"
+        ]
+      }
+    },
+    {
+      "id": "runbook-cpu",
+      "request_id": "fixture-request-a",
+      "source": "runbook",
+      "server": "fixture-ops",
+      "uri": "runbook://incident-response/cpu-spike",
+      "title": "Runbook: CPU 급증 대응 절차",
+      "retrieved_at": "2026-10-20T09:00:00+09:00",
+      "data": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n"
+    },
+    {
+      "id": "runbook-missing",
+      "request_id": "fixture-request-a",
+      "source": "runbook",
+      "server": "fixture-ops",
+      "uri": "runbook://incident-response/not-a-type",
+      "title": "Runbook Not Found",
+      "retrieved_at": "2026-10-20T09:00:00+09:00",
+      "data": "# Runbook Not Found\n\nNo runbook for incident type: not-a-type"
+    },
+    {
+      "id": "mon-other-request",
+      "request_id": "fixture-request-b",
+      "source": "monitoring",
+      "server": "fixture-ops",
+      "tool": "get_monitoring_status",
+      "data": {
+        "system_name": "payments-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 55.0,
+        "last_checked": "2026-10-20T09:00:00+09:00",
+        "alerts": [
+          "CPU 91% (threshold 80%)",
+          "payments-service-3 instance responding slow"
+        ]
+      }
+    },
+    {
+      "id": "analysis-generated",
+      "request_id": "fixture-request-a",
+      "source": "analysis",
+      "data": "payments-service CPU 91%라는 모델 해석. 원본 측정 근거가 아니다."
+    }
+  ],
+  "cases": [
+    {
+      "id": "valid-integer",
+      "expected_a_plan": "accept",
+      "reason": "91과 원본 91.0은 숫자로 동등하다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 91%, 관측 결과와 매뉴얼을 확인하고 대응 절차를 검토합니다."
+    },
+    {
+      "id": "valid-float",
+      "expected_a_plan": "accept",
+      "reason": "동일한 실수값을 오탐하지 않아야 한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91.0,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 91%, 관측 결과와 매뉴얼을 확인하고 대응 절차를 검토합니다."
+    },
+    {
+      "id": "valid-memory",
+      "expected_a_plan": "accept",
+      "reason": "메모리 55%는 원본 memory_percent와 일치한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "memory_percent",
+            "value": 55.0,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 메모리 55%로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "valid-multiple-systems",
+      "expected_a_plan": "accept",
+      "reason": "각 시스템의 별도 근거와 관측값이 일치한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          },
+          {
+            "system_name": "web-01",
+            "metric": "cpu_percent",
+            "value": 34.0,
+            "unit": "%",
+            "evidence_id": "mon-web"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 91%이고 web-01 CPU 34%로 확인되어 대응 절차를 검토합니다."
+    },
+    {
+      "id": "valid-status",
+      "expected_a_plan": "accept",
+      "reason": "시스템 상태의 원문과 일치한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "status",
+            "value": "degraded",
+            "unit": null,
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 상태는 degraded이며, 현재 알림과 대응 절차를 확인합니다."
+    },
+    {
+      "id": "valid-alert",
+      "expected_a_plan": "accept",
+      "reason": "알림은 원문 그대로 인용한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "alerts",
+            "value": "CPU 91% (threshold 80%)",
+            "unit": null,
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 알림 CPU 91% (threshold 80%)를 원문대로 확인하고 대응 절차를 검토합니다."
+    },
+    {
+      "id": "wrong-value",
+      "expected_a_plan": "reject",
+      "reason": "원본 CPU 91을 99로 바꿨다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 99,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 99%로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "wrong-system",
+      "expected_a_plan": "reject",
+      "reason": "payments 근거를 web-01의 관측값으로 썼다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "web-01",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) web-01 CPU 91%로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "wrong-metric",
+      "expected_a_plan": "reject",
+      "reason": "CPU 값을 메모리 값으로 썼다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "memory_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 메모리 91%로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "wrong-unit",
+      "expected_a_plan": "reject",
+      "reason": "사용률에 밀리초 단위를 붙였다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "ms",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 91ms로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-evidence",
+      "expected_a_plan": "reject",
+      "reason": "존재하지 않는 근거 ID다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "does-not-exist"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 출처 does-not-exist를 근거로 payments-service CPU 91%라는 사실을 보고합니다."
+    },
+    {
+      "id": "cross-request",
+      "expected_a_plan": "reject",
+      "reason": "값이 같아도 다른 요청의 근거다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-other-request"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 다른 요청의 mon-other-request로 payments-service CPU 91%라는 사실을 보고합니다."
+    },
+    {
+      "id": "unknown-system",
+      "expected_a_plan": "reject",
+      "reason": "unknown의 0은 유효한 실측값이 아니다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "billing-service",
+            "metric": "cpu_percent",
+            "value": 0,
+            "unit": "%",
+            "evidence_id": "mon-unknown"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) billing-service CPU 0%가 실측되어 정상으로 확인하고 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-source-value",
+      "expected_a_plan": "reject",
+      "reason": "누락된 CPU를 0으로 채울 수 없다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "log-service",
+            "metric": "cpu_percent",
+            "value": 0,
+            "unit": "%",
+            "evidence_id": "mon-missing"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) log-service CPU 0%로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "analysis-as-source",
+      "expected_a_plan": "reject",
+      "reason": "모델 해석은 관측값의 독립적인 원본 근거가 아니다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "analysis-generated"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 모델 해석을 원본 측정 근거로 사용해 payments-service CPU 91%라는 사실을 보고합니다."
+    },
+    {
+      "id": "wrong-status",
+      "expected_a_plan": "reject",
+      "reason": "원본 상태 degraded와 불일치한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "status",
+            "value": "healthy",
+            "unit": null,
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 상태는 healthy로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "altered-alert",
+      "expected_a_plan": "reject",
+      "reason": "알림 원문에 없는 수치를 추가했다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "alerts",
+            "value": "CPU 99% (threshold 80%)",
+            "unit": null,
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service 알림 CPU 99% (threshold 80%)가 발생하여 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-observation-value",
+      "expected_a_plan": "reject",
+      "reason": "관측값 필드가 누락되었다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU 값이 누락되었지만 현재 알림과 대응 절차를 확인합니다."
+    },
+    {
+      "id": "boolean-value",
+      "expected_a_plan": "reject",
+      "reason": "bool을 숫자 1로 취급하면 안 된다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": true,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) payments-service CPU true 값으로 확인되어 현재 알림과 대응 절차를 검토합니다."
+    },
+    {
+      "id": "no-observations",
+      "expected_a_plan": "reject",
+      "reason": "관측 사실이 없는 빈 진단이다.",
+      "candidate_draft": {
+        "observations": [],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 확인된 관측 사실은 없지만 진단을 완료했고 표준 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-action-source",
+      "expected_a_plan": "reject",
+      "reason": "조치가 존재하지 않는 근거를 참조한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "does-not-exist"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 없는 매뉴얼을 출처로 조치를 권고하며 현재 상태와 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-hypothesis-source",
+      "expected_a_plan": "reject",
+      "reason": "가설이 존재하지 않는 근거를 참조한다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "does-not-exist"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-cpu"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) 없는 출처를 근거로 원인 가설을 제시하며 현재 상태와 대응 절차를 검토합니다."
+    },
+    {
+      "id": "missing-runbook",
+      "expected_a_plan": "reject",
+      "reason": "Runbook Not Found 안내는 정상 매뉴얼 근거가 아니다.",
+      "candidate_draft": {
+        "observations": [
+          {
+            "system_name": "payments-service",
+            "metric": "cpu_percent",
+            "value": 91,
+            "unit": "%",
+            "evidence_id": "mon-payments"
+          }
+        ],
+        "hypotheses": [
+          {
+            "text": "CPU 부하에 따른 응답 저하 가능성",
+            "evidence_ids": [
+              "mon-payments"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "최근 요청 패턴과 배포 시점을 확인한다.",
+            "evidence_ids": [
+              "runbook-missing"
+            ]
+          }
+        ]
+      },
+      "legacy_draft": "1) Runbook Not Found 문서를 정상 대응 매뉴얼로 인용하고 대응 절차를 검토합니다."
+    },
+    {
+      "id": "malformed-output",
+      "expected_a_plan": "reject",
+      "reason": "구조 파싱 실패도 작성 시도에 포함해야 한다.",
+      "candidate_draft": "not a JSON object",
+      "legacy_draft": "1) 구조가 없는 자유 텍스트지만 최소 길이와 번호 조건을 충족하여 검증을 통과합니다."
+    }
+  ]
+}
