@@ -14,6 +14,7 @@ from pathlib import Path
 
 
 def main():
+    """로컬 기준 소스를 임시 추출해 같은 테스트를 실행하고 종료 코드를 반환한다."""
     root = Path(__file__).resolve().parent.parent
     fixture = json.loads((root / "tests/fixtures/diagnosis_cases.json").read_text(encoding="utf-8"))
     baseline = fixture["baseline_commit"]

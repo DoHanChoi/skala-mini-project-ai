@@ -15,6 +15,7 @@ with patch("dotenv.load_dotenv", return_value=False):
 
 
 def parse_sse(response):
+    """한 번의 종료 센티널을 확인하고 응답의 SSE JSON 이벤트를 읽는다."""
     frames = response.text.strip().split("\n\n")
     assert frames[-1] == "data: [DONE]", frames[-1]
     assert frames.count("data: [DONE]") == 1
@@ -23,6 +24,7 @@ def parse_sse(response):
 
 class ApiBaselineTests(OfflineAsyncCase):
     async def asyncSetUp(self):
+        """실제 서버 시작을 금지하고 임시 DB와 메모리 ASGI 클라이언트를 구성한다."""
         self.tmp = self.enterContext(tempfile.TemporaryDirectory())
         self.db_path = Path(self.tmp) / "test-session.db"
         self.store = SqliteSessionStore(self.db_path)
@@ -37,6 +39,7 @@ class ApiBaselineTests(OfflineAsyncCase):
         self.addAsyncCleanup(self.client.aclose)
 
     async def test_rest_and_sse_return_same_final_and_save_only_final(self):
+        """REST/SSE 최종 답변·이벤트·저장이 같고 초안은 먼저 전송됨을 확인한다."""
         query = load_fixture()["query"]
         rest = await self.client.post("/chat", json={"message": query, "thread_id": "rest"})
         stream = await self.client.get("/chat/stream", params={"message": query, "thread_id": "stream"})
@@ -66,6 +69,7 @@ class ApiBaselineTests(OfflineAsyncCase):
         self.assertLess(token_index, validation_index)
 
     async def test_sse_exposes_last_prompt_when_writer_supplies_it(self):
+        """테스트용 원시 프롬프트가 최종 SSE 필드에 노출되는 현재 계약을 고정한다."""
         # Fake normally supplies no prompt. A fake response exercises the current
         # transport contract without invoking either real model backend.
         reply = "1) 고정된 관측값을 확인하고 표준 매뉴얼의 대응 절차를 검토하여 진단합니다."
@@ -76,6 +80,7 @@ class ApiBaselineTests(OfflineAsyncCase):
         self.assertEqual(final["prompt"], "TEST-ONLY RAW PROMPT")
 
     async def test_general_chat_session_persistence_and_isolation(self):
+        """대화 이력 회상과 thread 분리 및 임시 DB 재연결 후 보존을 확인한다."""
         first = await self.client.post("/chat", json={"message": "제 이름은 민수입니다", "thread_id": "a"})
         self.assertEqual(first.json()["metadata"]["route"], "chat")
         response = await self.client.get("/chat/stream", params={"message": "제 이름이 뭐였죠?", "thread_id": "a"})
@@ -94,6 +99,7 @@ class ApiBaselineTests(OfflineAsyncCase):
         self.assertEqual(self.deps.mcp.calls, [])
 
     async def test_v1_basic_legacy_contract_has_no_validation(self):
+        """v1의 고정 auth-service 조회와 검증 없는 REST/SSE 응답을 재현한다."""
         self.deps.version = "v1"
         query = load_fixture()["query"]
         # Legacy deliberately looks up auth-service regardless of requested target.
@@ -114,6 +120,7 @@ class ApiBaselineTests(OfflineAsyncCase):
         self.assertEqual(tool.call_args.args[1], {"system_name": "auth-service"})
 
     async def test_missing_message_is_rejected_without_graph_or_storage(self):
+        """메시지 누락 요청이 조사·저장 없이 HTTP 422로 거절됨을 확인한다."""
         response = await self.client.post("/chat", json={"thread_id": "bad"})
         self.assertEqual(response.status_code, 422)
         self.assertEqual(self.store.load("bad"), [])

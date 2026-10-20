@@ -14,6 +14,7 @@ from agent.graph import (
 
 class ValidatorBaselineTests(OfflineAsyncCase):
     async def test_boundary_requires_30_characters_and_literal_number(self):
+        """현재 검증기의 30자 경계와 정확한 번호 문자열 조건을 고정한다."""
         for draft, accepted in [("1)" + "가" * 27, False),
                                 ("1)" + "가" * 28, True),
                                 ("가" * 40, False),
@@ -25,6 +26,7 @@ class ValidatorBaselineTests(OfflineAsyncCase):
                 self.assertEqual(_after_validate(result), "finalize" if accepted else "write")
 
     async def test_all_labeled_texts_pass_even_when_future_expectation_is_reject(self):
+        """수동 거부 유형을 포함한 텍스트 24개가 모두 통과하는 한계를 재현한다."""
         fixture = load_fixture()
         self.assertEqual(sum(c["expected_a_plan"] == "accept" for c in fixture["cases"]), 6)
         self.assertEqual(sum(c["expected_a_plan"] == "reject" for c in fixture["cases"]), 18)
@@ -36,6 +38,7 @@ class ValidatorBaselineTests(OfflineAsyncCase):
                 self.assertEqual(result["events"][-1]["verdict"], "합격")
 
     async def test_three_invalid_drafts_are_forced_to_pass_then_finalized(self):
+        """세 번째 실패가 강제 합격으로 바뀌고 같은 본문이 반환됨을 확인한다."""
         state = {"draft": "재시작", "events": []}
         for attempt in range(1, 4):
             result = await validate_node(state, make_deps())
@@ -46,6 +49,7 @@ class ValidatorBaselineTests(OfflineAsyncCase):
         self.assertEqual((await finalize_node(state, make_deps()))["final"], "재시작")
 
     async def test_fixed_fixture_has_independent_labels_and_source_edge_cases(self):
+        """핵심 관측값과 누락·unknown·타 요청 등 평가 데이터 경계를 점검한다."""
         fixture = load_fixture()
         evidence = {e["id"]: e for e in fixture["evidence"]}
         cases = {c["id"]: c for c in fixture["cases"]}
@@ -68,6 +72,7 @@ class ValidatorBaselineTests(OfflineAsyncCase):
 
 class GraphBaselineTests(OfflineAsyncCase):
     async def test_incident_fixed_values_gate_replan_and_two_writes(self):
+        """고정 장애 입력에서 수집·게이트·재계획·재시도·재작성을 함께 재현한다."""
         deps = make_deps(transient_once=True)
         result = await build_graph(deps).ainvoke(
             {"query": load_fixture()["query"], "history": [], "events": [], "cost_usd": 0.0})
@@ -88,6 +93,7 @@ class GraphBaselineTests(OfflineAsyncCase):
         self.assertGreater(result["cost_usd"], 0)
 
     async def test_first_invalid_draft_is_streamed_before_validation(self):
+        """첫 부적합 초안 토큰이 검증 이벤트보다 먼저 공개되는 순서를 확인한다."""
         stream = [item async for item in build_graph(make_deps()).astream(
             {"query": load_fixture()["query"], "events": []}, stream_mode=["updates", "custom"])]
         tokens = [(i, p) for i, (mode, p) in enumerate(stream) if mode == "custom"]
@@ -98,6 +104,7 @@ class GraphBaselineTests(OfflineAsyncCase):
         self.assertEqual([p["attempt"] for _, p in tokens], [1, 2])
 
     async def test_repeated_short_outputs_are_forced_through_entire_graph(self):
+        """실제 그래프에서도 짧은 초안 세 번 뒤 강제 종료되는 동작을 고정한다."""
         deps = make_deps()
         with patch.object(deps.quality_llm, "write", return_value=("실패", {"usd": 0})) as write:
             result = await build_graph(deps).ainvoke({"query": load_fixture()["query"], "events": []})
@@ -107,6 +114,7 @@ class GraphBaselineTests(OfflineAsyncCase):
         self.assertEqual(result["events"][-1], {"type": "Finalize", "pipeline": "incident-v2"})
 
     async def test_general_chat_preserves_history_without_mcp_or_validation(self):
+        """일반 대화가 히스토리를 사용하며 장애 조사와 검증을 건너뜀을 확인한다."""
         deps = make_deps()
         result = await build_graph(deps).ainvoke({"query": "제 이름이 뭐였죠?", "events": [],
             "history": [{"role": "user", "content": "제 이름은 민수입니다"}]})
@@ -116,12 +124,14 @@ class GraphBaselineTests(OfflineAsyncCase):
         self.assertNotIn("validation_attempts", result)
 
     async def test_resource_failure_propagates(self):
+        """매뉴얼 조회의 영구 오류가 정상 응답으로 숨겨지지 않음을 확인한다."""
         deps = make_deps()
         with patch.object(deps.mcp, "read_resource", side_effect=ValueError("fixed resource failure")):
             with self.assertRaisesRegex(ValueError, "fixed resource failure"):
                 await build_graph(deps).ainvoke({"query": load_fixture()["query"], "events": []})
 
     async def test_keyword_selection_and_unknown_target_fallback_are_current_behavior(self):
+        """시스템 폴백과 매뉴얼 키워드 우선순위를 현재 특성으로 기록한다."""
         self.assertEqual(_extract_system_name("없는 시스템 장애"), "auth-service")
         self.assertEqual(_extract_system_name("web-01 뒤에 payments-service 장애"), "web-01")
         collected = copy.deepcopy(collected_fixture())
