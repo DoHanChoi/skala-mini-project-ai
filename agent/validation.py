@@ -67,7 +67,7 @@ def _load_evidence(records: Any, request_id: str, errors: list[ValidationIssue])
     """요청의 근거를 복사·재검사하고 중복·훼손 근거는 비교와 대체 출력에서 제외한다."""
     indexed: dict[str, Evidence] = {}
     foreign_ids: set[str] = set()
-    duplicate_ids: set[str] = set()
+    seen_ids: set[str] = set()
     if not isinstance(records, (list, tuple)):
         _issue(errors, "invalid_evidence", "evidence", "근거 목록 형식이 올바르지 않습니다.")
         return indexed, foreign_ids
@@ -79,11 +79,11 @@ def _load_evidence(records: Any, request_id: str, errors: list[ValidationIssue])
             if record.request_id != request_id:
                 foreign_ids.add(record.id)
                 continue
-            if record.id in indexed or record.id in duplicate_ids:
+            if record.id in seen_ids:
                 indexed.pop(record.id, None)
-                duplicate_ids.add(record.id)
                 _issue(errors, "duplicate_evidence_id", path, "같은 ID의 근거가 중복되어 원본을 선택할 수 없습니다.")
                 continue
+            seen_ids.add(record.id)
             common = dict(request_id=record.request_id, task_index=record.task_index,
                           task_id=record.task_id, target=record.target, server=record.server,
                           retrieved_at=record.retrieved_at, data=record.raw)

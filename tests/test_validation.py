@@ -144,6 +144,18 @@ class DiagnosisValidationTests(OfflineAsyncCase):
             output = render_diagnosis(self.draft, evidence, request_id=self.request_id)
             self.assertNotIn('"payments-service"', output.reply)
 
+    async def test_duplicate_identity_is_blocked_even_when_one_metadata_record_is_invalid(self):
+        """중복 중 한 건이 훼손돼도 순서에 따라 다른 후보를 사실로 골라내지 않는다."""
+        valid = deepcopy(self.evidence[0])
+        invalid = {**deepcopy(valid), "system_name": "incorrect cached system"}
+        for pair in ([invalid, valid], [valid, invalid]):
+            records = pair + deepcopy(self.evidence[1:])
+            result, codes = self.check(evidence=records)
+            self.assertFalse(result.passed)
+            self.assertIn("duplicate_evidence_id", codes)
+            output = render_diagnosis(self.draft, records, request_id=self.request_id)
+            self.assertNotIn('"payments-service"', output.reply)
+
     async def test_eligibility_metadata_and_document_hash_tampering_are_rejected(self):
         """보존된 원본과 맞지 않는 적격성·시스템·문서 해시를 신뢰하지 않는다."""
         for position, changes in ((0, {"system_name": "web-01"}),
