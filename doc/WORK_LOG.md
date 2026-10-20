@@ -19,7 +19,7 @@
 
 - 이슈: [#1](https://github.com/DoHanChoi/skala-mini-project-ai/issues/1)
 - 작업 브랜치: `docs/issue-1-plan-a-workflow`
-- PR: 생성 후 이 항목에 연결한다.
+- PR: [#2](https://github.com/DoHanChoi/skala-mini-project-ai/pull/2)
 - 산출물: AGENTS.md, PLAN_A.md, WORK_LOG.md, README 개발 문서 링크.
 - 코드 변경: 없음. 문서만 변경한다.
 - 검증 결과: 상대 링크 18개 유효, 기준 커밋과 승인 경계 확인, 문서 간 범위·승인 규칙 검토, `git diff --check` 통과. 애플리케이션 변경이 없어 실행 테스트는 수행하지 않았다.
