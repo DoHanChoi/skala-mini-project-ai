@@ -156,6 +156,22 @@ class DiagnosisValidationTests(OfflineAsyncCase):
             output = render_diagnosis(self.draft, records, request_id=self.request_id)
             self.assertNotIn('"payments-service"', output.reply)
 
+    async def test_structurally_invalid_duplicate_id_is_excluded_in_both_orders(self):
+        """구조 파싱에 실패한 사본이 주장하는 같은 ID도 양쪽 순서에서 제외한다."""
+        valid = deepcopy(self.evidence[0])
+        for change in ({"extra": "not allowed"}, {"retrieved_at": "2026-10-20T09:00:00"},
+                       {"task_index": True}):
+            invalid = {**deepcopy(valid), **change}
+            invalid["raw"]["cpu_percent"] = 99.0
+            for pair in ([invalid, valid], [valid, invalid]):
+                with self.subTest(change=change, invalid_first=pair[0] is invalid):
+                    records = pair + deepcopy(self.evidence[1:])
+                    result, codes = self.check(evidence=records)
+                    self.assertFalse(result.passed)
+                    self.assertIn("duplicate_evidence_id", codes)
+                    output = render_diagnosis(self.draft, records, request_id=self.request_id)
+                    self.assertNotIn('"payments-service"', output.reply)
+
     async def test_eligibility_metadata_and_document_hash_tampering_are_rejected(self):
         """보존된 원본과 맞지 않는 적격성·시스템·문서 해시를 신뢰하지 않는다."""
         for position, changes in ((0, {"system_name": "web-01"}),

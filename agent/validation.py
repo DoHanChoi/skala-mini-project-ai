@@ -73,17 +73,29 @@ def _load_evidence(records: Any, request_id: str, errors: list[ValidationIssue])
         return indexed, foreign_ids
     for index, entry in enumerate(records):
         path = f"evidence.{index}"
+        raw_entry = entry
         try:
             raw_entry = entry.model_dump() if isinstance(entry, Evidence) else entry
             record = Evidence.model_validate(raw_entry)
-            if record.request_id != request_id:
-                foreign_ids.add(record.id)
-                continue
-            if record.id in seen_ids:
-                indexed.pop(record.id, None)
-                _issue(errors, "duplicate_evidence_id", path, "같은 ID의 근거가 중복되어 원본을 선택할 수 없습니다.")
-                continue
-            seen_ids.add(record.id)
+        except (ValidationError, ValueError, TypeError):
+            # A malformed candidate can still make an otherwise valid ID ambiguous.
+            claimed_id = raw_entry.get("id") if isinstance(raw_entry, dict) else None
+            if isinstance(claimed_id, str):
+                if claimed_id in seen_ids:
+                    _issue(errors, "duplicate_evidence_id", path, "같은 ID의 근거가 중복되어 원본을 선택할 수 없습니다.")
+                seen_ids.add(claimed_id)
+                indexed.pop(claimed_id, None)
+            _issue(errors, "invalid_evidence", path, "근거 구조·식별 정보가 올바르지 않습니다.")
+            continue
+        if record.request_id != request_id:
+            foreign_ids.add(record.id)
+            continue
+        if record.id in seen_ids:
+            indexed.pop(record.id, None)
+            _issue(errors, "duplicate_evidence_id", path, "같은 ID의 근거가 중복되어 원본을 선택할 수 없습니다.")
+            continue
+        seen_ids.add(record.id)
+        try:
             common = dict(request_id=record.request_id, task_index=record.task_index,
                           task_id=record.task_id, target=record.target, server=record.server,
                           retrieved_at=record.retrieved_at, data=record.raw)
