@@ -47,6 +47,7 @@
 - 승인: 사용자 “넘어가자”.
 - 이슈: [#5](https://github.com/DoHanChoi/skala-mini-project-ai/issues/5).
 - 작업 브랜치: `test/issue-5-baseline-fixtures`.
+- PR: [#6](https://github.com/DoHanChoi/skala-mini-project-ai/pull/6).
 - 산출물: 고정 근거 9개·초안 24개 fixture, 오프라인 특성·회귀 테스트, 기준 커밋 임시 추출 실행기, [기준 평가 문서](BASELINE.md).
 - 실행 코드 변경: 없음. A-02의 근거 모델과 A-03의 새 검증기는 구현하지 않는다.
 - 검증: 현재 코드와 `447db63` 기준 코드에서 각각 15개 테스트 통과. 기준 실행기는 같은 테스트·fixture·인터프리터를 사용한다. 실제 모델·MCP 네트워크·사용자 DB를 사용하지 않는다.
