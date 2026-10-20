@@ -62,6 +62,7 @@
 - 승인: 사용자 “넘어가사”. 첫 CodeRabbit 리뷰는 시작 후 최소 5분 뒤 결과를 확인한다.
 - 이슈: [#7](https://github.com/DoHanChoi/skala-mini-project-ai/issues/7).
 - 작업 브랜치: `feat/issue-7-evidence-provenance`.
+- PR: [#8](https://github.com/DoHanChoi/skala-mini-project-ai/pull/8).
 - 산출물: Evidence 모델·모니터링/매뉴얼 정규화, 요청별 근거 수집, [모델 계약 문서](EVIDENCE.md), 근거 테스트 17개.
 - 보존 범위: 원본 전체 사본, 요청·태스크 ID, 실제 MCP 서버·도구/URI, 수집 시각·실측 시각, 매뉴얼 제목·본문 SHA-256.
 - 활용 범위: missing·unknown·비정상·시스템 불일치와 없는 매뉴얼을 표시한다. 모델 analysis는 원본 근거로 추가하지 않는다. 현재 답변의 참·거짓 검증 성공을 의미하지 않는다.
