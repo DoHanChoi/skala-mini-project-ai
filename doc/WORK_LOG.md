@@ -106,6 +106,7 @@
 - 승인: A-04 완료 보고 후 다음 이슈 질문에 사용자 “응”(2026-10-21, Asia/Seoul). 첫 CodeRabbit 리뷰는 최소 10분 대기한다.
 - 이슈: [#13](https://github.com/DoHanChoi/skala-mini-project-ai/issues/13).
 - 작업 브랜치: `feat/issue-13-evidence-ui`.
+- PR: [#14](https://github.com/DoHanChoi/skala-mini-project-ai/pull/14).
 - 산출물: 관측·가설·조치 구역, 검증 범위·횟수·실패/비대상/알 수 없음 표시, 답변별 근거 펼치기와 키보드 초점 연결, 원본 텍스트 표시와 좁은 화면 스타일, [UI 계약](UI.md).
 - 자동 검증: Node 내장 UI 동작 검사 12개, 기존 Python 58개와 고정 기준 커밋 15개. Node 검사는 실제 화면 스크립트를 VM에서 실행하며 실제 Vue 렌더링을 대신하지 않는다.
 - 브라우저 검증은 실제 모델·MCP·사용자 DB·환경설정 없이 요청마다 독립적인 fake 그래프를 쓰는 `tests/ui_fixture_server.py`로 수행한다. 이 fixture 서버는 운영 서버와 대화 저장 검증이 아니다.
