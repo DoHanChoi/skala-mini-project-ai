@@ -33,6 +33,16 @@ def source_info(ref):
             'server_blob': git('rev-parse', f'{commit}:server.py'), 'data_tree': git('rev-parse', f'{commit}:data')}
 
 
+def runner_matches_commit(commit, fingerprints):
+    """미커밋 파일도 평가할 수 있도록 Git에 없는 소스는 불일치로 표시한다."""
+    for path, fingerprint in fingerprints.items():
+        blob = subprocess.run(['git', 'show', f'{commit}:{path}'], cwd=ROOT,
+                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        if blob.returncode or sha256(blob.stdout).hexdigest() != fingerprint:
+            return False
+    return True
+
+
 def run_worker(source, variant, options):
     """Git 소스를 임시 추출하고 같은 인터프리터·평가 코드·fixture로 실행한다."""
     archive = subprocess.check_output(['git', 'archive', source['commit'], 'agent', 'server.py', 'data'], cwd=ROOT)
@@ -59,6 +69,9 @@ def model_environment(model):
         selected = next((m for m in tags.json()['models'] if model in (m.get('name'), m.get('model'))), None)
         if selected is None:
             raise RuntimeError('requested model is not installed locally; no model will be downloaded')
+        if (selected.get('remote_host') or selected.get('remote_model')
+                or selected.get('details', {}).get('format') != 'gguf'):
+            raise RuntimeError('only verified local GGUF models are supported; cloud tags are forbidden')
         version = client.get('/api/version')
         version.raise_for_status()
         warmup = client.post('/api/chat', json={'model': model, 'messages': [{'role': 'user', 'content': 'OK라고만 답하세요.'}],
@@ -129,6 +142,7 @@ def ratio_text(value):
 def fenced(text):
     """생성 문장의 Markdown·HTML을 보고서에서도 코드 텍스트로 취급한다."""
     import re
+    text = '\n'.join(line.rstrip() for line in text.split('\n'))
     fence = '~' * max(3, max((len(m) + 1 for m in re.findall(r'~+', text)), default=3))
     return f'{fence}text\n{text}\n{fence}'
 
@@ -200,6 +214,8 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--overwrite', action='store_true')
     options = parser.parse_args(argv)
+    if options.output.suffix.lower() != '.json':
+        parser.error('output must end in .json so the JSON and Markdown paths cannot collide')
     if not 1 <= options.repetitions <= 10:
         parser.error('repetitions must be between 1 and 10')
     if (options.output.exists() or options.output.with_suffix('.md').exists()) and not options.overwrite:
@@ -208,6 +224,7 @@ def main(argv=None):
     runner_files = sorted(p for p in (ROOT / 'evaluation').rglob('*') if p.suffix in ('.py', '.json') and 'results' not in p.parts)
     metadata = {'created_at': datetime.now(timezone.utc).isoformat(), 'mode': options.mode,
                 'repetitions': options.repetitions, 'sources': sources,
+                'runner_commit': git('rev-parse', 'HEAD'),
                 'python': platform.python_version(), 'system': platform.system(), 'machine': platform.machine(),
                 'dependencies': {name: importlib.metadata.version(name) for name in ('langgraph', 'pydantic', 'fastapi', 'httpx')},
                 'fixture_sha256': sha256((ROOT / 'tests/fixtures/diagnosis_cases.json').read_bytes()).hexdigest(),
@@ -215,6 +232,7 @@ def main(argv=None):
                 'runner_sha256': {str(p.relative_to(ROOT)): sha256(p.read_bytes()).hexdigest() for p in runner_files},
                 'conditions': {'routing': 'fixed', 'collection': 'fixed snapshots', 'demo_delay_seconds': 0,
                                'real_mcp': False, 'dotenv_loaded': False, 'user_db_used': False}}
+    metadata['runner_matches_commit'] = runner_matches_commit(metadata['runner_commit'], metadata['runner_sha256'])
     if options.mode == 'ollama':
         metadata['local_model'] = model_environment(options.model)
     studies = [run_worker(sources[variant], variant, options) for variant in ('baseline', 'improved')]

@@ -33,6 +33,8 @@ node --test tests/ui.test.cjs
 - `.env`를 읽지 않고 tracing을 끈다. API는 메모리 ASGI로 호출하며 SQLite는 요청별 임시 폴더에만 만든다. 오프라인 worker는 소켓·DNS도 차단한다.
 - 결과에 커밋, agent/data tree·server blob, 평가 코드와 두 fixture SHA-256, Python·의존성 버전, 플랫폼과 모델 digest를 남긴다. 파일 내용 해시가 실행 당시 코드·자료를 식별한다.
 
+이번에 보관한 두 측정의 실행 코드와 최초 원시 결과는 커밋 `59957ac718ffff7ceb4dfbf3f56ccfa0df2bc8b5`에 고정되어 있다. 이후 CLI의 출력 경로·클라우드 모델 거부 검사와 실행 소스 추적 정보를 보강했다. 보관한 JSON에는 `provenance_annotation`으로 당시 커밋과 최초 파일 SHA-256만 추가했으며, 측정값·집계와 기존 `runner_sha256`은 바꾸지 않았다. 이 해시는 현재 CLI가 아니라 당시 소스에 대응한다. 테스트가 해당 커밋의 소스·최초 결과 및 재집계를 대조한다. Markdown 표시에서만 줄 끝 공백을 정리했으며 모델을 다시 호출하지 않았다.
+
 ### 로컬 모델의 추가 조건
 
 설치된 `qwen3:8b`를 같은 모델 digest·설정으로 사용한다. `temperature=0`, `seed=42`, `num_predict=2048`, `num_ctx=8192`, `think=false`, `stream=false`, 요청 제한 120초다. 준비 호출 1회는 결과 지연·사용량에서 제외한다. 입력의 query·원본 스냅샷은 같으며 **기준의 번호형 자유 텍스트 / 개선의 JSON Schema 출력·피드백은 변경 자체의 일부**다. 같은 프롬프트를 사용한 실험은 아니다.

@@ -1002,5 +1002,11 @@
       }
     }
   },
-  "functional_violations": []
+  "functional_violations": [],
+  "provenance_annotation": {
+    "runner_source_commit": "59957ac718ffff7ceb4dfbf3f56ccfa0df2bc8b5",
+    "annotation_added_after_measurement": true,
+    "original_result_sha256": "a8bc3ab496030580f1da4e8e550a3485662df981d32eb0ca95c445fda788db27",
+    "note": "실측 당시 코드와 원시 결과를 위 Git 커밋으로 보존했다. 이후 출력 확장자/클라우드 태그 차단과 Markdown 후행 공백 표시만 보완했다. 모델을 재호출하거나 측정값·집계를 변경하지 않았다."
+  }
 }

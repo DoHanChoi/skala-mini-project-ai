@@ -3,17 +3,19 @@ from argparse import Namespace
 import asyncio
 from contextlib import redirect_stderr
 from copy import deepcopy
+from hashlib import sha256
 import io
 import json
 from pathlib import Path
 import tempfile
+import subprocess
 from unittest.mock import patch
 
 import httpx
 
 from tests.support import OfflineAsyncCase, load_fixture
 from evaluation.common import REQUEST_ID, SETTINGS, digest, fraction, normalized_fixture, oracle_observations, summarize
-from evaluation.run import functional_violations, main, model_environment, run_worker, source_info, validator_summary, fenced
+from evaluation.run import ROOT, build_summary, functional_violations, main, model_environment, run_worker, source_info, validator_summary, fenced
 from evaluation.worker import bounded_ollama
 
 
@@ -94,6 +96,14 @@ class EvaluationTests(OfflineAsyncCase):
             self.assertEqual(target.read_text(), 'keep')
             worker.assert_not_called()
 
+    async def test_json_output_path_cannot_collide_with_markdown_report(self):
+        """비 JSON 경로는 원시 결과와 Markdown이 같은 파일을 덮어쓰기 전에 거부한다."""
+        with tempfile.TemporaryDirectory() as tmp, redirect_stderr(io.StringIO()), patch('evaluation.run.run_worker') as worker:
+            with self.assertRaises(SystemExit):
+                main(['--output', str(Path(tmp) / 'report.md')])
+            worker.assert_not_called()
+            self.assertFalse((Path(tmp) / 'report.md').exists())
+
     async def test_local_model_preflight_does_not_download_or_call_missing_model(self):
         """모델이 없으면 준비/생성 요청을 보내지 않고 측정을 중단한다."""
         requests = []
@@ -108,6 +118,23 @@ class EvaluationTests(OfflineAsyncCase):
             with self.assertRaisesRegex(RuntimeError, 'not installed locally'):
                 model_environment('not-installed')
         self.assertEqual([r.url.path for r in requests], ['/api/tags'])
+
+    async def test_cloud_or_unverified_model_tag_is_rejected_before_generation(self):
+        """로컬 서버 주소여도 클라우드 태그나 검증되지 않은 형식은 생성하지 않는다."""
+        for tag in ({'remote_host': 'https://example.invalid', 'details': {'format': 'gguf'}},
+                    {'details': {'format': 'remote'}}):
+            requests = []
+
+            def handle(request):
+                """클라우드 태그의 목록 응답만 제공하고 호출 경로를 기록한다."""
+                requests.append(request)
+                return httpx.Response(200, json={'models': [{'name': 'cloud-tag', 'digest': 'x', **tag}]})
+
+            client = httpx.Client(transport=httpx.MockTransport(handle), base_url='http://127.0.0.1:11434')
+            with patch('httpx.Client', return_value=client):
+                with self.assertRaisesRegex(RuntimeError, 'cloud tags are forbidden'):
+                    model_environment('cloud-tag')
+            self.assertEqual([r.url.path for r in requests], ['/api/tags'])
 
     async def test_controlled_model_transport_keeps_same_budget_and_records_actual_usage(self):
         """평가 전송이 로컬 고정 주소·같은 생성 예산을 쓰고 토큰·종료 원인을 보존한다."""
@@ -156,6 +183,7 @@ class EvaluationTests(OfflineAsyncCase):
         self.assertTrue(rendered.startswith('~~~~text\n'))
         self.assertTrue(rendered.endswith('\n~~~~'))
         self.assertIn(text, rendered)
+        self.assertNotIn('text  \n', fenced('text  '))
 
     async def test_real_model_quality_failure_is_kept_separate_from_operational_failure(self):
         """실모델의 검증 실패는 측정 결과로 남기고 실행 오류와 혼동하지 않는다."""
@@ -165,3 +193,32 @@ class EvaluationTests(OfflineAsyncCase):
         self.assertEqual(functional_violations([study], 'ollama'), [])
         row['operational_error'] = 'ReadTimeout'
         self.assertEqual(len(functional_violations([study], 'ollama')), 1)
+
+    async def test_recorded_results_match_their_pinned_runner_and_recomputed_aggregation(self):
+        """실측 당시 소스 해시와 집계값을 현재 구현·결과 개선 여부와 독립적으로 확인한다."""
+        for name in ('offline', 'ollama-qwen3-8b'):
+            result = json.loads((ROOT / f'evaluation/results/{name}.json').read_text())
+            commit = result['metadata'].get('runner_commit') or result['provenance_annotation']['runner_source_commit']
+            for path, fingerprint in result['metadata']['runner_sha256'].items():
+                source = subprocess.check_output(['git', 'show', f'{commit}:{path}'], cwd=ROOT)
+                self.assertEqual(sha256(source).hexdigest(), fingerprint)
+            if 'provenance_annotation' in result:
+                original = subprocess.check_output(['git', 'show', f'{commit}:evaluation/results/{name}.json'], cwd=ROOT)
+                self.assertEqual(sha256(original).hexdigest(), result['provenance_annotation']['original_result_sha256'])
+                self.assertEqual(json.loads(original), {k: v for k, v in result.items() if k != 'provenance_annotation'})
+            self.assertEqual(build_summary(result['studies'], result['metadata']['mode']), result['summary'])
+
+    async def test_full_offline_cli_writes_json_and_markdown_without_real_model(self):
+        """CLI 전체 경로의 소스·계측·집계·보고서 파일 생성을 외부 연결 없이 검증한다."""
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / 'result.json'
+            with patch('evaluation.run.model_environment', side_effect=AssertionError('real model forbidden')):
+                code = await asyncio.to_thread(main, ['--mode', 'offline', '--repetitions', '1',
+                    '--improved-ref', '56a7b12e88976d97ce4dc02426f1aea342452b1d', '--output', str(target)])
+            self.assertEqual(code, 0)
+            result = json.loads(target.read_text())
+            self.assertEqual(result['metadata']['mode'], 'offline')
+            self.assertNotIn('local_model', result['metadata'])
+            self.assertEqual(result['functional_violations'], [])
+            self.assertEqual([len(s['rows']) for s in result['studies']], [6, 6])
+            self.assertIn('실모델 일반화 평가가 아니다', target.with_suffix('.md').read_text())
