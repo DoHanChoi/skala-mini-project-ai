@@ -1,0 +1,319 @@
+{
+  "created_at": "2026-10-21T05:48:41.075374+00:00",
+  "completed_at": "2026-10-21T05:48:56.434787+00:00",
+  "baseline": "447db631b079f6c8b5e67c3b2bfce4dbaf59169f",
+  "improved": "0330a5c5ad152a48831681e5feb2a289302efbf9",
+  "mode": "openai",
+  "model": "gpt-4o",
+  "repetitions": 1,
+  "heldout_sha256": "de2ab0b034c7d590f3c28f987fcd5b5b9cc70cbe20bc76132e0e607886d113f2",
+  "conditions": {
+    "routing": "fixed",
+    "collection": "fixed copied snapshots",
+    "real_mcp": false,
+    "temporary_db": true,
+    "demo_delay_seconds": 0,
+    "scope": "quality writer and validation pipeline; not production end-to-end latency",
+    "temperature": 0,
+    "seed": null,
+    "max_tokens": null,
+    "stream": false,
+    "output_format": "baseline free text / improved json_object",
+    "order": "baseline all three, then improved all three",
+    "tracing_enabled": false,
+    "cases_previously_used_in_development": true,
+    "independent_external_benchmark": false
+  },
+  "provenance": {
+    "kind": "selected_fields_from_saved_final_report_evidence",
+    "source_filename": "openai-comparison.json",
+    "source_sha256": "c00ab1742c4a05cc7b039f19c73b8b7f7df9a64147a39eef86eda60103cac06c",
+    "limitations": "Selected measurements, not a full raw transcript or independently reproducible experiment."
+  },
+  "studies": [
+    {
+      "variant": "baseline",
+      "rows": [
+        {
+          "case_id": "heldout-cpu",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "bab5e13a8df9d2294bd6eb7cdb690a033dd970423e0f8563ccb9cdf03b1d1432",
+          "operational_error": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "write_calls": 1,
+          "elapsed_seconds": 2.023056958001689,
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 243,
+                "completion_tokens": 209,
+                "total_tokens": 452,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        {
+          "case_id": "heldout-memory",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "d53f7ba186186ee42ee1f9d215e4a770451c8b58beea8d04f2498abeeb8f0f33",
+          "operational_error": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "write_calls": 1,
+          "elapsed_seconds": 1.5899340839969227,
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 259,
+                "completion_tokens": 143,
+                "total_tokens": 402,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        {
+          "case_id": "heldout-unknown",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "934bffa958aa7c013c797d82abe4ca18de0bf28cda12e3f08d6a84accd1b92fa",
+          "operational_error": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "write_calls": 1,
+          "elapsed_seconds": 2.3528609160130145,
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 178,
+                "completion_tokens": 223,
+                "total_tokens": 401,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "improved",
+      "rows": [
+        {
+          "case_id": "heldout-cpu",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "bab5e13a8df9d2294bd6eb7cdb690a033dd970423e0f8563ccb9cdf03b1d1432",
+          "operational_error": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "write_calls": 1,
+          "elapsed_seconds": 2.802478208002867,
+          "oracle": {
+            "cited_match": {
+              "numerator": 6,
+              "denominator": 6,
+              "rate": 1.0
+            },
+            "fact_coverage": {
+              "numerator": 6,
+              "denominator": 7,
+              "rate": 0.8571428571428571
+            }
+          },
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 1574,
+                "completion_tokens": 415,
+                "total_tokens": 1989,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        {
+          "case_id": "heldout-memory",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "d53f7ba186186ee42ee1f9d215e4a770451c8b58beea8d04f2498abeeb8f0f33",
+          "operational_error": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "write_calls": 1,
+          "elapsed_seconds": 2.755295583003317,
+          "oracle": {
+            "cited_match": {
+              "numerator": 6,
+              "denominator": 6,
+              "rate": 1.0
+            },
+            "fact_coverage": {
+              "numerator": 6,
+              "denominator": 7,
+              "rate": 0.8571428571428571
+            }
+          },
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 1589,
+                "completion_tokens": 353,
+                "total_tokens": 1942,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        {
+          "case_id": "heldout-unknown",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "934bffa958aa7c013c797d82abe4ca18de0bf28cda12e3f08d6a84accd1b92fa",
+          "operational_error": null,
+          "reported_pass": false,
+          "validation_attempts": 3,
+          "write_calls": 3,
+          "elapsed_seconds": 2.436708624998573,
+          "oracle": {
+            "cited_match": {
+              "numerator": 0,
+              "denominator": 0,
+              "rate": null
+            },
+            "fact_coverage": {
+              "numerator": 0,
+              "denominator": 0,
+              "rate": null
+            }
+          },
+          "calls": [
+            {
+              "attempt": 1,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 1312,
+                "completion_tokens": 20,
+                "total_tokens": 1332,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            },
+            {
+              "attempt": 2,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 1349,
+                "completion_tokens": 16,
+                "total_tokens": 1365,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1152,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            },
+            {
+              "attempt": 3,
+              "returned_model": "gpt-4o-2024-08-06",
+              "usage": {
+                "prompt_tokens": 1349,
+                "completion_tokens": 20,
+                "total_tokens": 1369,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1152,
+                  "audio_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "finish_reason": "stop"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
