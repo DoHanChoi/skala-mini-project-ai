@@ -152,7 +152,12 @@ def _check_observation(observation: Observation, index: int, records: dict[str, 
         return
     matches = value in record.raw[metric] if metric == "alerts" else value == record.raw[metric]
     if not matches:
-        _issue(errors, "value_mismatch", f"{path}.value", "원본 값 또는 알림 원문과 일치하지 않습니다.")
+        message = ("원본 alerts가 빈 배열이므로 인용할 알림은 0개입니다. "
+                   "이 경로의 알림 관측 항목 전체를 삭제하고 다른 유효 관측은 유지하세요. "
+                   "빈 문자열·없음·배열 문자열로 바꾸지 마세요."
+                   if metric == "alerts" and not record.raw[metric]
+                   else "원본 값 또는 알림 원문과 일치하지 않습니다.")
+        _issue(errors, "value_mismatch", f"{path}.value", message)
 
 
 def _evaluate(payload: Any, evidence: Any, request_id: str, attempt: int) -> tuple:
