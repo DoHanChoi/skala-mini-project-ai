@@ -92,6 +92,7 @@
 - 승인: A-03 완료 보고 후 사용자 “다음 이슈로 가자”(2026-10-21, Asia/Seoul). 첫 CodeRabbit 리뷰는 최소 10분 대기한다.
 - 이슈: [#11](https://github.com/DoHanChoi/skala-mini-project-ai/issues/11).
 - 작업 브랜치: `feat/issue-11-validation-integration`.
+- PR: [#12](https://github.com/DoHanChoi/skala-mini-project-ai/pull/12).
 - 산출물: 세 백엔드의 공통 `diagnose` 계약과 프롬프트, 그래프 검증·재작성·실패 종료, REST/SSE 진단·근거·검증 상태, 장애 초안·원시 프롬프트 공개 차단, [통합 계약](PIPELINE.md).
 - 검증: 현재 코드 58개(근거 17 + 순수 검증 24 + 통합 17), 고정 기준 커밋 15개. 기준 특성 테스트는 내용 변경 없이 `pinned_*.py`로 분리해 기준 커밋에서만 실행한다.
 - 브라우저: 실제 환경설정·사용자 DB·MCP 대신 임시 DB와 고정 fake 서버를 로컬 전용 포트에서 사용했다. 기존 Vue 화면의 진행 이벤트·재작성 후 최종 본문과 입력 재활성화를 확인했다. agent-browser CLI가 없어 내장 브라우저로 확인했다.
