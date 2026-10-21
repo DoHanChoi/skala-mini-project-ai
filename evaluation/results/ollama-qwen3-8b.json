@@ -1,0 +1,1006 @@
+{
+  "schema_version": 1,
+  "metadata": {
+    "created_at": "2026-10-21T00:52:47.047208+00:00",
+    "mode": "ollama",
+    "repetitions": 1,
+    "sources": {
+      "baseline": {
+        "commit": "447db631b079f6c8b5e67c3b2bfce4dbaf59169f",
+        "agent_tree": "d8d3f709beb3a97d0e3c063bada41b7a0ff0dcbd",
+        "server_blob": "6ffa7b1e161af279f433cdfa09575131c93747c1",
+        "data_tree": "7e6c9dd59e007fbb25bdad179ec52bca5f9e429d"
+      },
+      "improved": {
+        "commit": "56a7b12e88976d97ce4dc02426f1aea342452b1d",
+        "agent_tree": "8ed0355c1d3dace8e6ac7eb36e38d1371f45200c",
+        "server_blob": "6e292df50a28f391803497372d134742c2e4c7ac",
+        "data_tree": "7e6c9dd59e007fbb25bdad179ec52bca5f9e429d"
+      }
+    },
+    "python": "3.11.15",
+    "system": "Darwin",
+    "machine": "arm64",
+    "dependencies": {
+      "langgraph": "1.2.16",
+      "pydantic": "2.14.1",
+      "fastapi": "0.150.0",
+      "httpx": "0.28.1"
+    },
+    "fixture_sha256": "12673179a45f867830f9569e255cef7adbe367890ea31da114b94b06e6ead2df",
+    "heldout_sha256": "de2ab0b034c7d590f3c28f987fcd5b5b9cc70cbe20bc76132e0e607886d113f2",
+    "runner_sha256": {
+      "evaluation/__init__.py": "98a44a5200edf7c302b668641451307cf3a6ed0708026704d86c60dcef8a7ef6",
+      "evaluation/common.py": "8033775d37a8187c938344668daaf6fe8e029d773ab91b5930a83baefa261206",
+      "evaluation/heldout.json": "de2ab0b034c7d590f3c28f987fcd5b5b9cc70cbe20bc76132e0e607886d113f2",
+      "evaluation/run.py": "563dcdcf1047174c47c97af0db1cdd7432db21e482c6d53311434d168b5bd208",
+      "evaluation/worker.py": "97a91b3d26d15eacb0c1125aac35b31516f2de75827ed7bea514d9a7ecf1318d"
+    },
+    "conditions": {
+      "routing": "fixed",
+      "collection": "fixed snapshots",
+      "demo_delay_seconds": 0,
+      "real_mcp": false,
+      "dotenv_loaded": false,
+      "user_db_used": false
+    },
+    "local_model": {
+      "model": "qwen3:8b",
+      "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "8.2B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 40960,
+        "embedding_length": 4096
+      },
+      "ollama_version": "0.33.0",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_predict": 2048,
+        "num_ctx": 8192
+      },
+      "think": false,
+      "stream": false,
+      "warmup_excluded": {
+        "done_reason": "stop",
+        "total_duration": 4137749666,
+        "load_duration": 3427917083,
+        "prompt_eval_count": 22,
+        "eval_count": 2
+      }
+    }
+  },
+  "studies": [
+    {
+      "variant": "baseline",
+      "mode": "ollama",
+      "validator_cases": [],
+      "rows": [
+        {
+          "case_id": "heldout-cpu",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "bab5e13a8df9d2294bd6eb7cdb690a033dd970423e0f8563ccb9cdf03b1d1432",
+          "operational_error": null,
+          "reply": "1) auth-service와 web-01의 상태를 비교하면, auth-service는 degraded 상태이고 web-01는 healthy 상태이다.  \n2) auth-service의 CPU 사용률은 86.5%, 메모리 사용률은 61.25%로 높은 수치를 보이며, web-01의 CPU 사용률은 24.75%, 메모리 사용률은 38.5%로 정상 수준이다.  \n3) auth-service의 이상 원인으로는 CPU 사용률 상승이 주요 요인일 것으로 추정되며, 최근 배포와 요청량 증가 여부를 확인해야 하며, 조치는 담당자 검토 후 결정해야 한다.",
+          "diagnosis": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": null,
+          "evidence": [],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 438,
+                "usd": 0.00219
+              },
+              "output": "1) auth-service와 web-01의 상태를 비교하면, auth-service는 degraded 상태이고 web-01는 healthy 상태이다.  \n2) auth-service의 CPU 사용률은 86.5%, 메모리 사용률은 61.25%로 높은 수치를 보이며, web-01의 CPU 사용률은 24.75%, 메모리 사용률은 38.5%로 정상 수준이다.  \n3) auth-service의 이상 원인으로는 CPU 사용률 상승이 주요 요인일 것으로 추정되며, 최근 배포와 요청량 증가 여부를 확인해야 하며, 조치는 담당자 검토 후 결정해야 한다.",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "ffc70ac9234a0b7c1aac3dcbafd74fae58ee9aca306c488f0799b11a9fb8aa74",
+                "prompt_sha256": "621513b9966d91dd7ba8a10f6e647881d62ea82f9542b1bb28a4b1b5a327db78",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 273,
+                "eval_count": 165,
+                "total_duration": 7736381875,
+                "load_duration": 2059208,
+                "prompt_eval_duration": 575243000,
+                "eval_duration": 7155562000
+              },
+              "elapsed_seconds": 7.751872291992186
+            }
+          ],
+          "write_calls": 1,
+          "elapsed_seconds": 7.762536791997263
+        },
+        {
+          "case_id": "heldout-memory",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "d53f7ba186186ee42ee1f9d215e4a770451c8b58beea8d04f2498abeeb8f0f33",
+          "operational_error": null,
+          "reply": "1) cache-service의 메모리 사용률이 92.75%로 급증하여 degraded 상태이며, web-01는 정상 상태(44.5% 메모리 사용)로 알림도 없어 비정상적인 차이가 있음.  \n2) 메모리 증가 추세와 프로세스별 사용량을 확인하여 과도한 메모리 소비 원인을 분석해야 함.  \n3) 최근 변경 사항과 메모리 누수 가능성에 대해 검토하여, 복구 명령은 실행 전에 조치 제안을 할 것.",
+          "diagnosis": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": null,
+          "evidence": [],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 434,
+                "usd": 0.00217
+              },
+              "output": "1) cache-service의 메모리 사용률이 92.75%로 급증하여 degraded 상태이며, web-01는 정상 상태(44.5% 메모리 사용)로 알림도 없어 비정상적인 차이가 있음.  \n2) 메모리 증가 추세와 프로세스별 사용량을 확인하여 과도한 메모리 소비 원인을 분석해야 함.  \n3) 최근 변경 사항과 메모리 누수 가능성에 대해 검토하여, 복구 명령은 실행 전에 조치 제안을 할 것.",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "82e480a629b43c39c03af682d4136193024e9cda697d43ed2d6245be1663a73b",
+                "prompt_sha256": "34af8962bcd1673ea45ab181677fae0c0d27bd8e7588f1bddd8c6c809d864665",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 295,
+                "eval_count": 139,
+                "total_duration": 6374901500,
+                "load_duration": 603833,
+                "prompt_eval_duration": 365303000,
+                "eval_duration": 5975023000
+              },
+              "elapsed_seconds": 6.378865374994348
+            }
+          ],
+          "write_calls": 1,
+          "elapsed_seconds": 6.387902666989248
+        },
+        {
+          "case_id": "heldout-unknown",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "934bffa958aa7c013c797d82abe4ca18de0bf28cda12e3f08d6a84accd1b92fa",
+          "operational_error": null,
+          "reply": "1) 모니터링 시스템에서 billing-service의 상태가 unknown으로 확인되었으며, CPU와 메모리 사용률은 0%로 나타났습니다.  \n2) 알림 내역에는 \"System 'billing-service' not found in monitoring\"이라는 메시지가 1건 기록되어 있습니다.  \n3) 관련 runbook은 존재하지 않아, 장애 대응 절차를 확인할 수 없습니다.",
+          "diagnosis": null,
+          "reported_pass": true,
+          "validation_attempts": 1,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": null,
+          "evidence": [],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 288,
+                "usd": 0.00144
+              },
+              "output": "1) 모니터링 시스템에서 billing-service의 상태가 unknown으로 확인되었으며, CPU와 메모리 사용률은 0%로 나타났습니다.  \n2) 알림 내역에는 \"System 'billing-service' not found in monitoring\"이라는 메시지가 1건 기록되어 있습니다.  \n3) 관련 runbook은 존재하지 않아, 장애 대응 절차를 확인할 수 없습니다.",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "bde9c9481647335b537009f18f21a270917f1780a0d7b0ac9e29165e260a1224",
+                "prompt_sha256": "cd92aea35b18170de4e1af2c4515c655f24d2cd11ed0a036c57a4852fcb3aed2",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 193,
+                "eval_count": 95,
+                "total_duration": 4389641375,
+                "load_duration": 633292,
+                "prompt_eval_duration": 181382000,
+                "eval_duration": 4195678000
+              },
+              "elapsed_seconds": 4.395610540988855
+            }
+          ],
+          "write_calls": 1,
+          "elapsed_seconds": 4.404398166996543
+        }
+      ]
+    },
+    {
+      "variant": "improved",
+      "mode": "ollama",
+      "validator_cases": [],
+      "rows": [
+        {
+          "case_id": "heldout-cpu",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "bab5e13a8df9d2294bd6eb7cdb690a033dd970423e0f8563ccb9cdf03b1d1432",
+          "operational_error": null,
+          "reply": "관측 사실 (값·시스템·단위·출처 연결 확인):\n- \"auth-service\" 상태: \"degraded\" [근거 \"ev:evaluation-request:0\"]\n- \"auth-service\" CPU 사용률: 86.5% [근거 \"ev:evaluation-request:0\"]\n- \"auth-service\" 메모리 사용률: 61.25% [근거 \"ev:evaluation-request:0\"]\n- \"auth-service\" 알림: \"CPU 사용률 86.5%로 상승\" [근거 \"ev:evaluation-request:0\"]\n- \"web-01\" 상태: \"healthy\" [근거 \"ev:evaluation-request:1\"]\n- \"web-01\" CPU 사용률: 24.75% [근거 \"ev:evaluation-request:1\"]\n- \"web-01\" 메모리 사용률: 38.5% [근거 \"ev:evaluation-request:1\"]\n원인 가설 (추정·의미 검증 제외):\n- \"auth-service의 CPU 사용률이 높아 서비스가 저하되었을 수 있습니다.\" [근거 \"ev:evaluation-request:0\"]\n- \"auth-service의 메모리 사용률이 높아 서비스가 저하되었을 수 있습니다.\" [근거 \"ev:evaluation-request:0\"]\n- \"auth-service의 CPU 사용률이 높아 알림이 발생했을 수 있습니다.\" [근거 \"ev:evaluation-request:0\"]\n권장 조치 (미실행·의미 검증 제외):\n- \"담당자에게 CPU 사용률이 높은 이유를 확인하고 조치를 요청하세요.\" [근거 \"ev:evaluation-request:2\"]\n검사 범위: 관측값·시스템·단위·출처 연결. 가설·조치의 의미는 검증하지 않았습니다.",
+          "diagnosis": {
+            "observations": [
+              {
+                "system_name": "auth-service",
+                "metric": "status",
+                "value": "degraded",
+                "unit": null,
+                "evidence_id": "ev:evaluation-request:0"
+              },
+              {
+                "system_name": "auth-service",
+                "metric": "cpu_percent",
+                "value": 86.5,
+                "unit": "%",
+                "evidence_id": "ev:evaluation-request:0"
+              },
+              {
+                "system_name": "auth-service",
+                "metric": "memory_percent",
+                "value": 61.25,
+                "unit": "%",
+                "evidence_id": "ev:evaluation-request:0"
+              },
+              {
+                "system_name": "auth-service",
+                "metric": "alerts",
+                "value": "CPU 사용률 86.5%로 상승",
+                "unit": null,
+                "evidence_id": "ev:evaluation-request:0"
+              },
+              {
+                "system_name": "web-01",
+                "metric": "status",
+                "value": "healthy",
+                "unit": null,
+                "evidence_id": "ev:evaluation-request:1"
+              },
+              {
+                "system_name": "web-01",
+                "metric": "cpu_percent",
+                "value": 24.75,
+                "unit": "%",
+                "evidence_id": "ev:evaluation-request:1"
+              },
+              {
+                "system_name": "web-01",
+                "metric": "memory_percent",
+                "value": 38.5,
+                "unit": "%",
+                "evidence_id": "ev:evaluation-request:1"
+              }
+            ],
+            "hypotheses": [
+              {
+                "text": "auth-service의 CPU 사용률이 높아 서비스가 저하되었을 수 있습니다.",
+                "evidence_ids": [
+                  "ev:evaluation-request:0"
+                ]
+              },
+              {
+                "text": "auth-service의 메모리 사용률이 높아 서비스가 저하되었을 수 있습니다.",
+                "evidence_ids": [
+                  "ev:evaluation-request:0"
+                ]
+              },
+              {
+                "text": "auth-service의 CPU 사용률이 높아 알림이 발생했을 수 있습니다.",
+                "evidence_ids": [
+                  "ev:evaluation-request:0"
+                ]
+              }
+            ],
+            "actions": [
+              {
+                "text": "담당자에게 CPU 사용률이 높은 이유를 확인하고 조치를 요청하세요.",
+                "evidence_ids": [
+                  "ev:evaluation-request:2"
+                ]
+              }
+            ]
+          },
+          "reported_pass": true,
+          "validation_attempts": 2,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": {
+            "request_id": "evaluation-request",
+            "attempt": 2,
+            "passed": true,
+            "scope": "observed_values_and_source_links",
+            "errors": [],
+            "status": "passed"
+          },
+          "evidence": [
+            {
+              "id": "ev:evaluation-request:0",
+              "request_id": "evaluation-request",
+              "task_index": 0,
+              "task_id": "task-0",
+              "source": "monitoring",
+              "target": "auth-service",
+              "server": "ops",
+              "locator": "get_monitoring_status",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": "2026-10-21T09:00:00+09:00",
+              "system_name": "auth-service",
+              "title": null,
+              "content_sha256": null,
+              "raw": {
+                "system_name": "auth-service",
+                "status": "degraded",
+                "cpu_percent": 86.5,
+                "memory_percent": 61.25,
+                "alerts": [
+                  "CPU 사용률 86.5%로 상승"
+                ],
+                "last_checked": "2026-10-21T09:00:00+09:00"
+              },
+              "available": true,
+              "eligible_metrics": [
+                "status",
+                "cpu_percent",
+                "memory_percent",
+                "alerts"
+              ],
+              "issues": []
+            },
+            {
+              "id": "ev:evaluation-request:1",
+              "request_id": "evaluation-request",
+              "task_index": 1,
+              "task_id": "task-1",
+              "source": "monitoring",
+              "target": "web-01",
+              "server": "ops",
+              "locator": "get_monitoring_status",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": "2026-10-21T09:00:00+09:00",
+              "system_name": "web-01",
+              "title": null,
+              "content_sha256": null,
+              "raw": {
+                "system_name": "web-01",
+                "status": "healthy",
+                "cpu_percent": 24.75,
+                "memory_percent": 38.5,
+                "alerts": [],
+                "last_checked": "2026-10-21T09:00:00+09:00"
+              },
+              "available": true,
+              "eligible_metrics": [
+                "status",
+                "cpu_percent",
+                "memory_percent",
+                "alerts"
+              ],
+              "issues": []
+            },
+            {
+              "id": "ev:evaluation-request:2",
+              "request_id": "evaluation-request",
+              "task_index": 2,
+              "task_id": "task-runbook",
+              "source": "runbook",
+              "target": "heldout-cpu",
+              "server": "evaluation-ops",
+              "locator": "runbook://incident-response/heldout-cpu",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": null,
+              "system_name": null,
+              "title": "CPU 점검 매뉴얼",
+              "content_sha256": "85e0b108a34ad821297077ea228e37a0c5a748594275c7184d6db3d7cdbc0694",
+              "raw": "# CPU 점검 매뉴얼\n1. 원본 CPU·메모리·상태를 확인한다.\n2. 최근 배포와 요청량을 확인한다.\n3. 조치는 담당자 검토 후 결정한다.",
+              "available": true,
+              "eligible_metrics": [],
+              "issues": []
+            }
+          ],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 2226,
+                "usd": 0.01113
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"status\",\n      \"value\": \"degraded\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 86.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 61.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"CPU 사용률 86.5%로 상승\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"status\",\n      \"value\": \"healthy\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 24.75,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"memory_percent\",\n      \"value\": 38.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"alerts\",\n      \"value\": \"\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"auth-service의 CPU 사용률이 높아지면서 시스템이 저하 상태가 되었을 수 있다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"auth-service의 메모리 사용률이 높아지면서 시스템이 저하 상태가 되었을 수 있다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"auth-service의 CPU 사용률이 높아지면서 경고가 발생했을 수 있다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"담당자에게 CPU 사용률이 높은 원인을 확인하고 조치를 요청해야 한다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "e6e46a7723af2c7b60400c888d7319e551315d4f8c62a0df836fe0082a29d088",
+                "prompt_sha256": "f7e00d07a2ac5c34e695ad6ecba2045dae181c1ecc5098eb7ee848f5f8338930",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1595,
+                "eval_count": 631,
+                "total_duration": 31654160583,
+                "load_duration": 647125,
+                "prompt_eval_duration": 2668920000,
+                "eval_duration": 28969847000
+              },
+              "elapsed_seconds": 31.67563195800176
+            },
+            {
+              "attempt": 2,
+              "feedback": "[{\"code\": \"value_mismatch\", \"path\": \"observations.7.value\", \"message\": \"원본 값 또는 알림 원문과 일치하지 않습니다.\"}]",
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 2197,
+                "usd": 0.010985
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"status\",\n      \"value\": \"degraded\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 86.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 61.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"auth-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"CPU 사용률 86.5%로 상승\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"status\",\n      \"value\": \"healthy\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 24.75,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"memory_percent\",\n      \"value\": 38.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"auth-service의 CPU 사용률이 높아 서비스가 저하되었을 수 있습니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"auth-service의 메모리 사용률이 높아 서비스가 저하되었을 수 있습니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"auth-service의 CPU 사용률이 높아 알림이 발생했을 수 있습니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"담당자에게 CPU 사용률이 높은 이유를 확인하고 조치를 요청하세요.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "5f4fbe2c5749b8be3b941114c5c5b76bc6f2bf91e95d97e38542be74d5fe9eef",
+                "prompt_sha256": "559adf7d0688fe3ea089725d92cb334710ca3e66b76c0ae7eee9eab36d838d17",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1631,
+                "eval_count": 566,
+                "total_duration": 25964469750,
+                "load_duration": 1694041,
+                "prompt_eval_duration": 181632000,
+                "eval_duration": 25764119000
+              },
+              "elapsed_seconds": 25.979471624988946
+            }
+          ],
+          "write_calls": 2,
+          "elapsed_seconds": 57.69918266701279,
+          "oracle": {
+            "cited_match": {
+              "numerator": 7,
+              "denominator": 7,
+              "rate": 1.0
+            },
+            "fact_coverage": {
+              "numerator": 7,
+              "denominator": 7,
+              "rate": 1.0
+            }
+          }
+        },
+        {
+          "case_id": "heldout-memory",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "d53f7ba186186ee42ee1f9d215e4a770451c8b58beea8d04f2498abeeb8f0f33",
+          "operational_error": null,
+          "reply": "진단 검증 실패 (시도 3/3)\n확인된 원본 관측:\n- \"cache-service\" CPU 사용률: 27.25% [근거 \"ev:evaluation-request:0\"]\n- \"cache-service\" 메모리 사용률: 92.75% [근거 \"ev:evaluation-request:0\"]\n- \"cache-service\" 상태: \"degraded\" [근거 \"ev:evaluation-request:0\"]\n- \"cache-service\" 알림: \"메모리 사용률 92.75%로 지속 증가\" [근거 \"ev:evaluation-request:0\"]\n- \"web-01\" CPU 사용률: 18.25% [근거 \"ev:evaluation-request:1\"]\n- \"web-01\" 메모리 사용률: 44.5% [근거 \"ev:evaluation-request:1\"]\n- \"web-01\" 상태: \"healthy\" [근거 \"ev:evaluation-request:1\"]\n실패한 초안의 가설·조치는 표시하지 않습니다.\n검사 범위: 관측값·시스템·단위·출처 연결. 가설·조치의 의미는 검증하지 않았습니다.",
+          "diagnosis": null,
+          "reported_pass": false,
+          "validation_attempts": 3,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": {
+            "request_id": "evaluation-request",
+            "attempt": 3,
+            "passed": false,
+            "scope": "observed_values_and_source_links",
+            "errors": [
+              {
+                "code": "value_mismatch",
+                "path": "observations.7.value",
+                "message": "원본 값 또는 알림 원문과 일치하지 않습니다."
+              }
+            ],
+            "status": "failed"
+          },
+          "evidence": [
+            {
+              "id": "ev:evaluation-request:0",
+              "request_id": "evaluation-request",
+              "task_index": 0,
+              "task_id": "task-0",
+              "source": "monitoring",
+              "target": "cache-service",
+              "server": "ops",
+              "locator": "get_monitoring_status",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": "2026-10-21T09:00:00+09:00",
+              "system_name": "cache-service",
+              "title": null,
+              "content_sha256": null,
+              "raw": {
+                "system_name": "cache-service",
+                "status": "degraded",
+                "cpu_percent": 27.25,
+                "memory_percent": 92.75,
+                "alerts": [
+                  "메모리 사용률 92.75%로 지속 증가"
+                ],
+                "last_checked": "2026-10-21T09:00:00+09:00"
+              },
+              "available": true,
+              "eligible_metrics": [
+                "status",
+                "cpu_percent",
+                "memory_percent",
+                "alerts"
+              ],
+              "issues": []
+            },
+            {
+              "id": "ev:evaluation-request:1",
+              "request_id": "evaluation-request",
+              "task_index": 1,
+              "task_id": "task-1",
+              "source": "monitoring",
+              "target": "web-01",
+              "server": "ops",
+              "locator": "get_monitoring_status",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": "2026-10-21T09:00:00+09:00",
+              "system_name": "web-01",
+              "title": null,
+              "content_sha256": null,
+              "raw": {
+                "system_name": "web-01",
+                "status": "healthy",
+                "cpu_percent": 18.25,
+                "memory_percent": 44.5,
+                "alerts": [],
+                "last_checked": "2026-10-21T09:00:00+09:00"
+              },
+              "available": true,
+              "eligible_metrics": [
+                "status",
+                "cpu_percent",
+                "memory_percent",
+                "alerts"
+              ],
+              "issues": []
+            },
+            {
+              "id": "ev:evaluation-request:2",
+              "request_id": "evaluation-request",
+              "task_index": 2,
+              "task_id": "task-runbook",
+              "source": "runbook",
+              "target": "heldout-memory",
+              "server": "evaluation-ops",
+              "locator": "runbook://incident-response/heldout-memory",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": null,
+              "system_name": null,
+              "title": "메모리 점검 매뉴얼",
+              "content_sha256": "32bf04ff9ea493026592571a6947c69700df07ec79dff3237c6a5f94f3de37fd",
+              "raw": "# 메모리 점검 매뉴얼\n1. 메모리 증가 추세와 프로세스별 사용량을 확인한다.\n2. 최근 변경과 메모리 누수 가능성을 검토한다.\n3. 검토 전 복구 명령은 실행하지 않는다.",
+              "available": true,
+              "eligible_metrics": [],
+              "issues": []
+            }
+          ],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 2328,
+                "usd": 0.01164
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"status\",\n      \"value\": \"degraded\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 27.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 92.75,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"메모리 사용률 92.75%로 지속 증가\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"status\",\n      \"value\": \"healthy\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 18.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"memory_percent\",\n      \"value\": 44.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"alerts\",\n      \"value\": \"\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"cache-service의 메모리 사용률이 급격히 증가하고 있으며, 이는 메모리 누수나 특정 프로세스의 비정상적인 사용 때문일 수 있다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"cache-service와 web-01의 메모리 사용률을 비교해보면, cache-service가 월등히 높은 수준을 보이고 있어, 이 시스템에 특별한 문제가 있을 가능성이 높다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\", \"ev:evaluation-request:1\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"메모리 증가 추세와 프로세스별 사용량을 확인하고, 최근 변경과 메모리 누수 가능성을 검토한다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    },\n    {\n      \"text\": \"메모리 점검 매뉴얼에 따라, 메모리 사용량이 증가하는 원인을 파악하고, 복구 명령은 실행하지 않는다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "b3171ad48531eba92ea8aafff3d6af926e12a53008210c86185512556499b887",
+                "prompt_sha256": "cfacdd4c1fb9700025da1c3c22b261a892d8f61d0977f49b4f9e4c78a975f2f5",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1613,
+                "eval_count": 715,
+                "total_duration": 33881919417,
+                "load_duration": 1338667,
+                "prompt_eval_duration": 1495835000,
+                "eval_duration": 32215234000
+              },
+              "elapsed_seconds": 33.893896083012805
+            },
+            {
+              "attempt": 2,
+              "feedback": "[{\"code\": \"value_mismatch\", \"path\": \"observations.7.value\", \"message\": \"원본 값 또는 알림 원문과 일치하지 않습니다.\"}]",
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 2291,
+                "usd": 0.011455
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"status\",\n      \"value\": \"degraded\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 27.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 92.75,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"메모리 사용률 92.75%로 지속 증가\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"status\",\n      \"value\": \"healthy\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 18.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"memory_percent\",\n      \"value\": 44.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"alerts\",\n      \"value\": \"\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"cache-service의 메모리 사용률이 급격히 증가하고 있으며, 이는 메모리 누수나 특정 프로세스의 비정상적인 사용 때문일 수 있습니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"web-01의 메모리 사용률은 정상 수준으로, cache-service와의 비교에서 메모리 사용량이 비정상적으로 높음을 나타냅니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\", \"ev:evaluation-request:1\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"메모리 증가 추세와 프로세스별 사용량을 확인하고, 최근 변경 사항과 메모리 누수 가능성을 검토합니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "78e6f1d307a4338687768ee58abb0e4bfd69f8a43ff33459e443e1283a2894da",
+                "prompt_sha256": "d1e15e28fb93a354f9f184728848cfe2c77d0470fc705c090f4a546aebb41bae",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1649,
+                "eval_count": 642,
+                "total_duration": 29679438416,
+                "load_duration": 3397083,
+                "prompt_eval_duration": 180355000,
+                "eval_duration": 29479292000
+              },
+              "elapsed_seconds": 29.71700237499317
+            },
+            {
+              "attempt": 3,
+              "feedback": "[{\"code\": \"value_mismatch\", \"path\": \"observations.7.value\", \"message\": \"원본 값 또는 알림 원문과 일치하지 않습니다.\"}]",
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 2291,
+                "usd": 0.011455
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"status\",\n      \"value\": \"degraded\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 27.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 92.75,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"cache-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"메모리 사용률 92.75%로 지속 증가\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"status\",\n      \"value\": \"healthy\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 18.25,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"memory_percent\",\n      \"value\": 44.5,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    },\n    {\n      \"system_name\": \"web-01\",\n      \"metric\": \"alerts\",\n      \"value\": \"\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:1\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"cache-service의 메모리 사용률이 급격히 증가하고 있으며, 이는 메모리 누수나 특정 프로세스의 비정상적인 사용 때문일 수 있습니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"web-01의 메모리 사용률은 정상 수준으로, cache-service와의 비교에서 메모리 사용량이 비정상적으로 높음을 나타냅니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\", \"ev:evaluation-request:1\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"메모리 증가 추세와 프로세스별 사용량을 확인하고, 최근 변경 사항과 메모리 누수 가능성을 검토합니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:2\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "02fb9974c47d2e256b01c9d7909ba7d6abff7195f9ea9c6eff97da250a1183da",
+                "prompt_sha256": "65f29a1956610d3c40050ae169fea86eb1c719181c22ea30d46467c2ffebd4eb",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1649,
+                "eval_count": 642,
+                "total_duration": 29042846125,
+                "load_duration": 2344208,
+                "prompt_eval_duration": 183448000,
+                "eval_duration": 28812019000
+              },
+              "elapsed_seconds": 29.060725875009666
+            }
+          ],
+          "write_calls": 3,
+          "elapsed_seconds": 92.72031508300279,
+          "oracle": {
+            "cited_match": {
+              "numerator": 0,
+              "denominator": 0,
+              "rate": null
+            },
+            "fact_coverage": {
+              "numerator": 0,
+              "denominator": 7,
+              "rate": 0.0
+            }
+          }
+        },
+        {
+          "case_id": "heldout-unknown",
+          "scenario": "real_model",
+          "endpoint": "rest",
+          "repetition": 1,
+          "input_sha256": "934bffa958aa7c013c797d82abe4ca18de0bf28cda12e3f08d6a84accd1b92fa",
+          "operational_error": null,
+          "reply": "진단 검증 실패 (시도 3/3)\n확인된 원본 관측:\n확인 가능한 원본 관측이 없습니다.\n실패한 초안의 가설·조치는 표시하지 않습니다.\n검사 범위: 관측값·시스템·단위·출처 연결. 가설·조치의 의미는 검증하지 않았습니다.",
+          "diagnosis": null,
+          "reported_pass": false,
+          "validation_attempts": 3,
+          "unvalidated_token_frames": 0,
+          "bad_draft_exposed": false,
+          "raw_prompt_exposed": false,
+          "bad_draft_saved": false,
+          "validation": {
+            "request_id": "evaluation-request",
+            "attempt": 3,
+            "passed": false,
+            "scope": "observed_values_and_source_links",
+            "errors": [
+              {
+                "code": "unavailable_evidence",
+                "path": "observations.0.evidence_id",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "observations.1.evidence_id",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "observations.2.evidence_id",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "observations.3.evidence_id",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "hypotheses.0.evidence_ids.0",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "actions.0.evidence_ids.0",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              },
+              {
+                "code": "unavailable_evidence",
+                "path": "actions.1.evidence_ids.0",
+                "message": "해당 원본은 관측·문서 근거로 사용할 수 없습니다."
+              }
+            ],
+            "status": "failed"
+          },
+          "evidence": [
+            {
+              "id": "ev:evaluation-request:0",
+              "request_id": "evaluation-request",
+              "task_index": 0,
+              "task_id": "task-0",
+              "source": "monitoring",
+              "target": "billing-service",
+              "server": "ops",
+              "locator": "get_monitoring_status",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": "2026-10-21T09:00:00+09:00",
+              "system_name": "billing-service",
+              "title": null,
+              "content_sha256": null,
+              "raw": {
+                "system_name": "billing-service",
+                "status": "unknown",
+                "cpu_percent": 0,
+                "memory_percent": 0,
+                "alerts": [
+                  "System 'billing-service' not found in monitoring"
+                ],
+                "last_checked": "2026-10-21T09:00:00+09:00"
+              },
+              "available": false,
+              "eligible_metrics": [],
+              "issues": [
+                "unknown_system"
+              ]
+            },
+            {
+              "id": "ev:evaluation-request:1",
+              "request_id": "evaluation-request",
+              "task_index": 1,
+              "task_id": "task-runbook",
+              "source": "runbook",
+              "target": "heldout-unknown",
+              "server": "evaluation-ops",
+              "locator": "runbook://incident-response/heldout-unknown",
+              "retrieved_at": "2026-10-21T00:00:00+00:00",
+              "observed_at": null,
+              "system_name": null,
+              "title": "Runbook Not Found",
+              "content_sha256": "6e9224f26883787b286755a5e71a773c027bde34d55de1a067229aab1890bd6c",
+              "raw": "# Runbook Not Found\nNo runbook for incident type: heldout-unknown",
+              "available": false,
+              "eligible_metrics": [],
+              "issues": [
+                "runbook_not_found"
+              ]
+            }
+          ],
+          "calls": [
+            {
+              "attempt": 1,
+              "feedback": null,
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 1669,
+                "usd": 0.008345
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"status\",\n      \"value\": \"unknown\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"System 'billing-service' not found in monitoring\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"billing-service 시스템이 모니터링 시스템에서 등록되지 않았거나, 접근 권한이 없는 것으로 보입니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"billing-service 시스템의 모니터링 설정을 확인하고, 시스템이 올바르게 등록되어 있는지 확인하세요.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"모니터링 시스템에서 billing-service 시스템의 접근 권한을 확인하고, 필요한 경우 권한을 부여하세요.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "c0f76ee76299803bafdba84700c0de8b0dcd8edbbacbb91ddebf4ea3656c99af",
+                "prompt_sha256": "ad17068c8f2f35f67e347da21c5a2f851219eaf468027392fd794d211ee9af6a",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1285,
+                "eval_count": 384,
+                "total_duration": 18142255958,
+                "load_duration": 972833,
+                "prompt_eval_duration": 1002915000,
+                "eval_duration": 17046043000
+              },
+              "elapsed_seconds": 18.149773874989478
+            },
+            {
+              "attempt": 2,
+              "feedback": "[{\"code\": \"unavailable_evidence\", \"path\": \"observations.0.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.1.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.2.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.3.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"hypotheses.0.evidence_ids.0\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"actions.0.evidence_ids.0\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"actions.1.evidence_ids.0\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}]",
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 1827,
+                "usd": 0.009135
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"status\",\n      \"value\": \"unknown\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"System 'billing-service' not found in monitoring\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    }\n  ],\n  \"hypotheses\": [],\n  \"actions\": []\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "00bd1616aa3e979b9402012dc8f00f10664b68cdf99e95829a4f650b205b350e",
+                "prompt_sha256": "6c0451775f92daa8c954c0fb25e199e55a96693419c334a8113cbe93336097ed",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1607,
+                "eval_count": 220,
+                "total_duration": 10494893834,
+                "load_duration": 1249084,
+                "prompt_eval_duration": 640578000,
+                "eval_duration": 9843332000
+              },
+              "elapsed_seconds": 10.510197708004853
+            },
+            {
+              "attempt": 3,
+              "feedback": "[{\"code\": \"unavailable_evidence\", \"path\": \"observations.0.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.1.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.2.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}, {\"code\": \"unavailable_evidence\", \"path\": \"observations.3.evidence_id\", \"message\": \"해당 원본은 관측·문서 근거로 사용할 수 없습니다.\"}]",
+              "usage": {
+                "model": "ollama:qwen3:8b",
+                "tokens": 1844,
+                "usd": 0.00922
+              },
+              "output": "{\n  \"observations\": [\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"status\",\n      \"value\": \"unknown\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"cpu_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"memory_percent\",\n      \"value\": 0,\n      \"unit\": \"%\",\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    },\n    {\n      \"system_name\": \"billing-service\",\n      \"metric\": \"alerts\",\n      \"value\": \"System 'billing-service' not found in monitoring\",\n      \"unit\": null,\n      \"evidence_id\": \"ev:evaluation-request:0\"\n    }\n  ],\n  \"hypotheses\": [\n    {\n      \"text\": \"billing-service 시스템이 모니터링 시스템에서 등록되지 않았거나, 접근 권한이 없는 것으로 보입니다.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ],\n  \"actions\": [\n    {\n      \"text\": \"billing-service 시스템의 모니터링 설정을 확인하고, 시스템이 올바르게 등록되어 있는지 확인하세요.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    },\n    {\n      \"text\": \"모니터링 시스템에서 billing-service의 상태를 다시 확인하고, 접근 권한이 있는지 확인하세요.\",\n      \"evidence_ids\": [\"ev:evaluation-request:0\"]\n    }\n  ]\n}",
+              "error_type": null,
+              "transport": {
+                "request_sha256": "754b55b0e7eae963fd27ead989dc781602251d957ea100cbe5d7cb3c318cda27",
+                "prompt_sha256": "5e62b387b7af94ee5dfbb3491932f751f40b94379e518cf1220fc9a0cff663d3",
+                "done": true,
+                "done_reason": "stop",
+                "prompt_eval_count": 1464,
+                "eval_count": 380,
+                "total_duration": 17411938417,
+                "load_duration": 1212875,
+                "prompt_eval_duration": 407807000,
+                "eval_duration": 16984264000
+              },
+              "elapsed_seconds": 17.421507791994372
+            }
+          ],
+          "write_calls": 3,
+          "elapsed_seconds": 46.11030254198704,
+          "oracle": {
+            "cited_match": {
+              "numerator": 0,
+              "denominator": 0,
+              "rate": null
+            },
+            "fact_coverage": {
+              "numerator": 0,
+              "denominator": 0,
+              "rate": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "validator": null,
+      "groups": {
+        "real_model/rest": {
+          "runs": 3,
+          "completed": 3,
+          "operational_errors": 0,
+          "reported_pass": {
+            "numerator": 3,
+            "denominator": 3,
+            "rate": 1.0
+          },
+          "reported_failure": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "unvalidated_token_runs": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "bad_draft_exposure": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "raw_prompt_exposure": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "bad_draft_saved": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "mean_write_calls": 1,
+          "mean_rewrites": 0,
+          "latency_seconds": {
+            "n": 3,
+            "mean": 6.184945875327685,
+            "p50": 6.387902666989248,
+            "p95_nearest_rank": 7.762536791997263
+          },
+          "token_observation_coverage": {
+            "numerator": 3,
+            "denominator": 3,
+            "rate": 1.0
+          },
+          "model_tokens_observed": 1160,
+          "model_tokens": 1160,
+          "estimated_usd_virtual": 0.0058000000000000005
+        }
+      }
+    },
+    "improved": {
+      "validator": null,
+      "groups": {
+        "real_model/rest": {
+          "runs": 3,
+          "completed": 3,
+          "operational_errors": 0,
+          "reported_pass": {
+            "numerator": 1,
+            "denominator": 3,
+            "rate": 0.3333333333333333
+          },
+          "reported_failure": {
+            "numerator": 2,
+            "denominator": 3,
+            "rate": 0.6666666666666666
+          },
+          "unvalidated_token_runs": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "bad_draft_exposure": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "raw_prompt_exposure": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "bad_draft_saved": {
+            "numerator": 0,
+            "denominator": 3,
+            "rate": 0.0
+          },
+          "mean_write_calls": 2.6666666666666665,
+          "mean_rewrites": 1.6666666666666667,
+          "latency_seconds": {
+            "n": 3,
+            "mean": 65.50993343066754,
+            "p50": 57.69918266701279,
+            "p95_nearest_rank": 92.72031508300279
+          },
+          "token_observation_coverage": {
+            "numerator": 8,
+            "denominator": 8,
+            "rate": 1.0
+          },
+          "model_tokens_observed": 16673,
+          "model_tokens": 16673,
+          "estimated_usd_virtual": 0.08336500000000001
+        }
+      }
+    }
+  },
+  "functional_violations": []
+}
