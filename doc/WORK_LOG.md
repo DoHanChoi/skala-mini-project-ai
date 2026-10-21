@@ -121,6 +121,7 @@
 - 승인: A-05 완료 보고 후 사용자 “넘어가”(2026-10-21, Asia/Seoul). 첫 CodeRabbit 리뷰는 최소 10분 대기한다.
 - 이슈: [#15](https://github.com/DoHanChoi/skala-mini-project-ai/issues/15).
 - 작업 브랜치: `test/issue-15-evaluation-report`.
+- PR: [#16](https://github.com/DoHanChoi/skala-mini-project-ai/pull/16).
 - 산출물: Git 소스 격리 평가 러너, fixture·독립 관측 대조·집계·계약 검사, 원시 JSON/실행 보고서, [평가 결과와 재현 절차](EVALUATION.md).
 - 오프라인: 정상 6개는 양쪽 통과, 대응 오류 18개의 검출은 기준 0/18·개선 18/18. 통제 파이프라인 36회에서 최초 성공·수정·3회 실패와 REST/SSE/저장 경계를 재현했다. 표현 계약이 다른 개발 fixture 결과이며 실모델 정확도로 보고하지 않는다.
 - 실모델: 설치된 로컬 qwen3:8b, 질문 3개 × 버전별 1회. 같은 스냅샷·모델 digest·temperature/seed/token/context 예산, think=false·비스트리밍으로 통제했다. CPU는 2회 후 통과(관측 7/7 원본 일치), 메모리는 빈 알림 문자열 반복으로 3회 후 원본 대체 답변, unknown도 3회 후 실패 종료했다. 실제 운영 기본 설정·전체 라우팅·MCP·실모델 일반화를 주장하지 않는다.
