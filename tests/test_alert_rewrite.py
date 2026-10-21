@@ -34,7 +34,7 @@ class AlertRewriteTests(OfflineAsyncCase):
     async def test_recorded_memory_failure_has_actionable_empty_array_feedback(self):
         """A-06 실모델 초안은 계속 거부하되 빈 배열 관측 삭제를 구체적으로 안내한다."""
         result = json.loads((Path(__file__).resolve().parents[1] /
-                            'evaluation/results/ollama-qwen3-8b.json').read_text())
+                            'evaluation/results/ollama-qwen3-8b.json').read_text(encoding='utf-8'))
         row = next(r for s in result['studies'] if s['variant'] == 'improved'
                    for r in s['rows'] if r['case_id'] == 'heldout-memory')
         for call in row['calls']:
