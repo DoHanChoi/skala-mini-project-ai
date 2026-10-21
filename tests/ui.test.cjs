@@ -162,6 +162,7 @@ test('일반 대화 토큰과 최종 답변은 같은 말풍선을 사용하고 
   const stream = submit(h, '안녕하세요');
   submit(h, '중복 요청');
   assert.equal(h.streams.length, 1);
+  stream.emit({type: 'RouteDecided', route: 'chat'});
   stream.emit({type: 'AnswerToken', delta: '안녕'});
   stream.emit({type: 'AnswerToken', delta: '하세요'});
   assert.equal(h.api.log.value.at(-1).text, '안녕하세요');
@@ -198,4 +199,16 @@ test('객체가 아닌 SSE JSON과 깨진 프레임은 무시하고 다음 정�
   stream.emit('[DONE]');
   assert.equal(h.api.log.value.filter(i => i.kind === 'agent').length, 1);
   assert.equal(h.api.sending.value, false);
+});
+
+test('장애 또는 경로 미확정 토큰은 화면에 표시하지 않는다', () => {
+  const h = harness();
+  const stream = submit(h);
+  stream.emit({type: 'AnswerToken', delta: 'PRIVATE UNKNOWN DRAFT'});
+  stream.emit({type: 'RouteDecided', route: 'incident'});
+  stream.emit({type: 'AnswerToken', delta: 'PRIVATE INCIDENT DRAFT', attempt: 1});
+  assert.equal(h.api.log.value.filter(i => i.kind === 'agent').length, 0);
+  stream.emit(passedAnswer());
+  stream.emit('[DONE]');
+  assert.doesNotMatch(JSON.stringify(h.api.log.value), /PRIVATE/);
 });

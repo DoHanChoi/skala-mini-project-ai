@@ -350,14 +350,17 @@ createApp({
       const es = new EventSource(url);
       let streamItem = null;
       let streamAttempt = null;   // write_node 재작성(attempt 증가) 시 새 말풍선으로 끊는다
+      let route = null;
 
       es.onmessage = (event) => {
         if (event.data === '[DONE]') { es.close(); sending.value = false; return; }
         let e;
         try { e = JSON.parse(event.data); } catch { return; }
         if (!e || typeof e !== 'object' || Array.isArray(e)) return;
+        if (e.type === 'RouteDecided') route = e.route;
 
         if (e.type === 'AnswerToken') {
+          if (route !== 'chat') return;
           if (!streamItem || streamAttempt !== e.attempt) {
             streamItem = reactive({ id: nextId++, kind: 'agent', text: '' });
             log.value.push(streamItem);
