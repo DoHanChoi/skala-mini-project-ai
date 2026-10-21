@@ -22,8 +22,10 @@ from langgraph.graph import END, StateGraph
 from langsmith import traceable
 
 from .deps import SupervisorDeps
+from .diagnosis import DiagnosisDraft
 from .evidence import monitoring_evidence, runbook_evidence
 from .retry import with_retry
+from .validation import render_diagnosis
 
 
 def _load_known_systems() -> set[str]:
@@ -67,6 +69,8 @@ class AgentState(TypedDict, total=False):
     draft: str
     validation_attempts: int
     validation_feedback: str
+    validation: dict
+    diagnosis: dict | None
     final: str
     last_prompt: str
     cost_usd: float
@@ -274,44 +278,41 @@ async def analysis_node(state: AgentState, deps: SupervisorDeps) -> dict:
 
 @traceable(name="write_node")
 async def write_node(state: AgentState, deps: SupervisorDeps) -> dict:
-    """Wave 8/10a — 고품질 모델로 초안 작성 (1차는 의도적 저품질).
-
-    토큰마다 attempt 번호를 같이 실어 보낸다 — validate가 반려해 재작성(attempt 증가)
-    될 때 프론트가 새 말풍선으로 끊어서 보여줄 수 있게 하기 위함(Wave 8 재작성 루프를
-    그대로 노출)."""
+    """근거 ID를 포함한 JSON 초안을 작성하고 검증 전 본문·프롬프트는 공개하지 않는다."""
     attempt = state.get("validation_attempts", 0) + 1
-    writer = get_stream_writer()
-    draft, usage = await deps.quality_llm.write(
-        state["query"], state.get("collected", []),
-        attempt, state.get("validation_feedback"),
-        on_token=lambda piece: writer(
-            {"type": "AnswerToken", "attempt": attempt, "delta": piece}))
-    return {"draft": draft, "last_prompt": usage.get("prompt"),
+    draft, usage = await deps.quality_llm.diagnose(
+        state["query"], state.get("evidence", []),
+        [c["data"] for c in state.get("collected", []) if c["source"] == "analysis"],
+        attempt, state.get("validation_feedback"))
+    return {"draft": draft,
             "cost_usd": _cost(state, usage),
             "events": state["events"] + [{"type": "DraftWritten", "attempt": attempt,
-                                          "length": len(draft)}]}
+                                          "length": len(draft) if isinstance(draft, str) else 0}]}
 
 
 @traceable(name="validate_node")
 async def validate_node(state: AgentState, deps: SupervisorDeps) -> dict:
-    """Wave 8 — 코드 기준 검증: 30자 이상 + 절차 번호 포함이어야 합격."""
-    draft = state["draft"]
+    """원본과 초안을 대조하고 구체적인 검사 오류를 같은 요청의 재작성에 전달한다."""
     attempts = state.get("validation_attempts", 0) + 1
-    ok = len(draft) >= 30 and "1)" in draft
-    verdict = "합격" if ok else "불합격"
-    if not ok and attempts >= 3:   # 실모델 무한 재작성 방지 — 최대 3회 후 통과 처리
-        ok, verdict = True, "합격(최대 시도 도달 — 통과 처리)"
-    feedback = None if ok else (
-        f"응답이 너무 짧습니다({len(draft)}자, 최소 30자). 절차를 1) 2) 3) 번호로 "
-        f"구체적으로 설명하세요.")
-    event = {"type": "Validation", "attempt": attempts, "verdict": verdict}
+    output = render_diagnosis(state["draft"], state.get("evidence", []),
+                              request_id=state["request_id"], attempt=attempts)
+    validation = output.validation.model_dump()
+    ok = output.validation.passed
+    feedback = None if ok else json.dumps(validation["errors"], ensure_ascii=False)
+    event = {"type": "Validation", "attempt": attempts, "verdict": "합격" if ok else "불합격",
+             "passed": ok, "will_retry": not ok and attempts < 3,
+             "scope": output.validation.scope,
+             "errors": validation["errors"]}
+    diagnosis = DiagnosisDraft.model_validate_json(state["draft"]).model_dump() if ok else None
     return {"validation_attempts": attempts, "validation_feedback": feedback,
+            "validation": validation, "diagnosis": diagnosis, "final": output.reply,
             "events": state["events"] + [event]}
 
 
 @traceable(name="finalize_node")
 async def finalize_node(state: AgentState, deps: SupervisorDeps) -> dict:
-    return {"final": state["draft"],
+    """검증기가 만든 본문만 최종 결과로 확정한다."""
+    return {"final": state["final"],
             "events": state["events"] + [{"type": "Finalize", "pipeline": "incident-v2"}]}
 
 
@@ -325,7 +326,8 @@ def _after_replan_check(state: AgentState) -> str:
 
 
 def _after_validate(state: AgentState) -> str:
-    return "finalize" if state.get("validation_feedback") is None else "write"
+    """합격 또는 총 3회 소진 시 종료하며 실패 판정을 강제 합격으로 바꾸지 않는다."""
+    return "finalize" if state["validation"]["passed"] or state["validation_attempts"] >= 3 else "write"
 
 
 def build_graph(deps: SupervisorDeps):

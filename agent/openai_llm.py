@@ -18,6 +18,7 @@ OpenAI 계정에 실제 비용이 청구된다(run_openai.sh 실행 전 반드�
 
 사전 조건: 유효한 `OPENAI_API_KEY` 환경변수(.env).
 """
+import asyncio
 import json
 import os
 import re
@@ -207,6 +208,14 @@ class OpenAIFastLLM(OpenAILLM):
 
 class OpenAIQualityLLM(OpenAILLM):
     """최종 답변 작성 전담 (고품질 모델, 기본 gpt-4o)."""
+
+    @traceable(run_type="llm", name="openai_quality.diagnose")
+    async def diagnose(self, query: str, evidence: list[dict], analysis: list[str],
+                       attempt: int, feedback: str | None) -> tuple[str, dict]:
+        """기존 JSON 모드와 공통 스키마 프롬프트를 사용하며 잘못된 출력도 보정하지 않는다."""
+        from .diagnosis_prompt import diagnosis_prompt
+        system, user = diagnosis_prompt(query, evidence, analysis, attempt, feedback)
+        return await asyncio.to_thread(self._chat, system, user, json_mode=True)
 
     @traceable(run_type="llm", name="openai_quality.write")
     async def write(self, query: str, collected: list[dict], attempt: int,
