@@ -153,6 +153,19 @@ class EvaluationTests(OfflineAsyncCase):
         self.assertEqual(post.call_args.args[0], 'http://127.0.0.1:11434/api/chat')
         self.assertNotIn('SECRET SYSTEM', json.dumps(calls))
 
+    async def test_transport_missing_or_invalid_token_counts_remain_unmeasured(self):
+        """로컬 응답의 사용량 누락·잘못된 수를 실측 0토큰·0원으로 만들지 않는다."""
+        for counts in ({}, {'prompt_eval_count': 12},
+                       {'prompt_eval_count': True, 'eval_count': 8},
+                       {'prompt_eval_count': 12, 'eval_count': -1}):
+            model, _ = bounded_ollama('qwen3:8b')
+            response = httpx.Response(200, json={'message': {'content': 'answer'}, **counts},
+                request=httpx.Request('POST', 'http://127.0.0.1:11434/api/chat'))
+            with patch('httpx.post', return_value=response):
+                _, usage = model._chat('system', 'snapshot')
+            self.assertNotIn('tokens', usage)
+            self.assertNotIn('usd', usage)
+
     async def test_source_isolation_reproduces_both_validators_and_public_boundaries(self):
         """기준·개선을 별도 Git 추출 프로세스에서 실제 REST/SSE·임시 DB로 비교한다."""
         options = Namespace(mode='offline', model='unused', repetitions=1)

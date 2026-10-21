@@ -105,9 +105,12 @@ def bounded_ollama(model):
         data = response.json()
         record.update({key: data.get(key) for key in ('done', 'done_reason', 'prompt_eval_count', 'eval_count',
                        'total_duration', 'load_duration', 'prompt_eval_duration', 'eval_duration')})
-        tokens = (data.get('prompt_eval_count') or 0) + (data.get('eval_count') or 0)
-        return data['message']['content'], {'model': f'ollama:{model}', 'tokens': tokens,
-                                           'usd': round(tokens / 1000 * .005, 6)}
+        usage = {'model': f'ollama:{model}'}
+        counts = [data.get(key) for key in ('prompt_eval_count', 'eval_count')]
+        if all(type(count) is int and count >= 0 for count in counts):
+            tokens = sum(counts)
+            usage.update(tokens=tokens, usd=round(tokens / 1000 * .005, 6))
+        return data['message']['content'], usage
 
     async def chat_stream(system, user, on_token=None):
         """REST 측정에서는 기준 writer도 같은 비스트리밍 전송을 쓰도록 통제한다."""
