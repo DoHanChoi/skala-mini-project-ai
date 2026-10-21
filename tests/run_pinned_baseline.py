@@ -30,7 +30,7 @@ def main():
         print(f"Baseline commit: {baseline}", flush=True)
         # Keep the A-01 suites runnable when new feature suites require newer code.
         result = subprocess.run(
-            [sys.executable, "-m", "unittest", "tests.test_baseline", "tests.test_api_baseline", "-v"],
+            [sys.executable, "-m", "unittest", "tests.pinned_baseline", "tests.pinned_api_baseline", "-v"],
             cwd=target)
         return result.returncode
 

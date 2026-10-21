@@ -4,6 +4,7 @@
 정해진 응답을 돌려준다. 각 호출은 LangSmith에 run_type="llm"으로 기록되고, 문자열
 길이 기반 토큰 추정치로 비용을 계산해 상태에 누적한다 (Wave 10a의 모델 분리 근거).
 """
+import json
 import re
 
 from langsmith import traceable
@@ -89,6 +90,30 @@ class FastLLM(FakeLLM):
 
 class QualityLLM(FakeLLM):
     """최종 답변 작성 전담 (고품질·고비용)."""
+
+    @traceable(run_type="llm", name="quality_llm.diagnose")
+    async def diagnose(self, query: str, evidence: list[dict], analysis: list[str],
+                       attempt: int, feedback: str | None) -> tuple[str, dict]:
+        """첫 구조 오류와 다음 원본 일치 초안으로 오프라인 재작성을 재현한다."""
+        from .diagnosis_prompt import diagnosis_prompt
+        system, user = diagnosis_prompt(query, evidence, analysis, attempt, feedback)
+        observations = []
+        if attempt > 1:
+            for record in evidence:
+                if record["source"] != "monitoring" or not record["available"]:
+                    continue
+                for metric in record["eligible_metrics"]:
+                    values = record["raw"][metric] if metric == "alerts" else [record["raw"][metric]]
+                    for value in values:
+                        observations.append({"system_name": record["system_name"], "metric": metric,
+                                             "value": value, "evidence_id": record["id"],
+                                             "unit": "%" if metric in ("cpu_percent", "memory_percent") else None})
+        runbooks = [e["id"] for e in evidence if e["source"] == "runbook" and e["available"]]
+        actions = ([{"text": "대응 매뉴얼을 검토하고 담당자와 후속 조치를 결정하세요.",
+                     "evidence_ids": runbooks}] if runbooks else [])
+        draft = json.dumps({"observations": observations, "hypotheses": [], "actions": actions},
+                           ensure_ascii=False)
+        return draft, self._usage(system + user, draft)
 
     @traceable(run_type="llm", name="quality_llm.write")
     async def write(self, query: str, collected: list[dict], attempt: int,

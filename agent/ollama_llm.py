@@ -10,6 +10,7 @@ fc
 
 사전 조건: `ollama serve` 실행 중 + `ollama pull qwen3:0.6b qwen3:8b`.
 """
+import asyncio
 import json
 import re
 from pathlib import Path
@@ -237,6 +238,15 @@ class OllamaFastLLM(OllamaLLM):
 
 class OllamaQualityLLM(OllamaLLM):
     """최종 답변 작성 전담 (상대적으로 큰 모델)."""
+
+    @traceable(run_type="llm", name="ollama_quality.diagnose")
+    async def diagnose(self, query: str, evidence: list[dict], analysis: list[str],
+                       attempt: int, feedback: str | None) -> tuple[str, dict]:
+        """공통 스키마로 비스트리밍 JSON을 요청하고 원문을 검증기로 전달한다."""
+        from .diagnosis import DiagnosisDraft
+        from .diagnosis_prompt import diagnosis_prompt
+        system, user = diagnosis_prompt(query, evidence, analysis, attempt, feedback)
+        return await asyncio.to_thread(self._chat, system, user, schema=DiagnosisDraft.model_json_schema())
 
     @traceable(run_type="llm", name="ollama_quality.write")
     async def write(self, query: str, collected: list[dict], attempt: int,

@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from agent.deps import SupervisorDeps
 from agent.fake_llm import FastLLM, QualityLLM
 from agent.graph import build_graph
+from agent.json_output import json_safe
 from agent.mcp_client import MCPClient
 from agent.session_store import SqliteSessionStore
 from agent.supervisor_v1 import run_v1
@@ -122,6 +123,19 @@ def _metadata(result: dict, run_id: str | None) -> dict:
     }
 
 
+def _diagnosis_fields(result: dict) -> dict:
+    """공개 가능한 확정 진단과 근거·검증 상태만 허용 목록으로 구성한다."""
+    validation = result.get("validation")
+    if validation is not None:
+        validation = {**validation, "status": "passed" if validation["passed"] else "failed"}
+    else:
+        validation = {"status": "not_applicable", "passed": None, "attempt": 0,
+                      "scope": None, "errors": [], "request_id": None,
+                      "reason": "legacy_v1" if app.state.deps.version != "v2" else "general_chat"}
+    return {"diagnosis": result.get("diagnosis"), "evidence": json_safe(result.get("evidence", [])),
+            "validation": validation}
+
+
 @traceable(name="chat_request")
 async def _handle_chat(message: str, thread_id: str) -> tuple[dict, str | None]:
     deps = app.state.deps
@@ -142,7 +156,7 @@ async def _handle_chat(message: str, thread_id: str) -> tuple[dict, str | None]:
 async def chat(req: ChatRequest):
     result, run_id = await _handle_chat(req.message, req.thread_id)
     return {"reply": result["final"], "events": result.get("events", []),
-            "metadata": _metadata(result, run_id)}
+            "metadata": _metadata(result, run_id), **_diagnosis_fields(result)}
 
 
 @app.get("/chat/stream")
@@ -155,16 +169,19 @@ async def chat_stream(message: str, thread_id: str = "default"):
     deps = app.state.deps
 
     async def gen():
+        """단계 이벤트와 확정 결과만 내보내며 내부 초안·프롬프트를 직렬화하지 않는다."""
         history = deps.session_store.load(thread_id)
         if deps.version != "v2":
             result = await run_v1(deps, message, thread_id, history)
             for ev in result["events"]:
                 yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
-            yield f"data: {json.dumps({'type': 'FinalAnswer', 'reply': result['final']}, ensure_ascii=False)}\n\n"
+            answer = {"type": "FinalAnswer", "reply": result["final"],
+                      "metadata": _metadata(result, None), **_diagnosis_fields(result)}
+            yield f"data: {json.dumps(answer, ensure_ascii=False)}\n\n"
         else:
             seen = 0
-            final = ""
-            last_prompt = None   # finalize까지 살아남은 최종 write/chat 호출의 실제 프롬프트
+            result = {}
+            route = None
             # stream_mode를 리스트로 주면 (mode, payload) 튜플이 나온다 — "updates"는
             # 노드가 끝날 때마다의 상태 델타, "custom"은 write_node/chat_answer_node가
             # get_stream_writer()로 실행 중에 즉시 흘려보내는 토큰(AnswerToken) 이벤트다.
@@ -172,21 +189,26 @@ async def chat_stream(message: str, thread_id: str = "default"):
                     {"query": message, "thread_id": thread_id, "history": history,
                      "events": [], "cost_usd": 0.0}, stream_mode=["updates", "custom"]):
                 if mode == "custom":
-                    yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                    # 일반 대화 토큰만 허용한다. 장애 모델에는 토큰 콜백도 주지 않는다.
+                    if route == "chat" and payload.get("type") == "AnswerToken":
+                        token = {"type": "AnswerToken", "delta": payload["delta"]}
+                        yield f"data: {json.dumps(token, ensure_ascii=False)}\n\n"
                     continue
                 for node_name, delta in payload.items():
+                    route = delta.get("route", route)
+                    result.update({key: value for key, value in delta.items()
+                                   if key not in {"draft", "last_prompt", "validation_feedback", "collected"}})
                     for ev in (delta.get("events") or [])[seen:]:
                         ev = {**ev, "node": node_name}
                         yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
                     if delta.get("events"):
                         seen = len(delta["events"])
-                    if delta.get("final"):
-                        final = delta["final"]
-                    if delta.get("last_prompt"):
-                        last_prompt = delta["last_prompt"]
-            yield f"data: {json.dumps({'type': 'FinalAnswer', 'reply': final, 'prompt': last_prompt}, ensure_ascii=False)}\n\n"
+            final = result["final"]
             deps.session_store.append(thread_id, "user", message)
             deps.session_store.append(thread_id, "assistant", final)
+            answer = {"type": "FinalAnswer", "reply": final,
+                      "metadata": _metadata(result, None), **_diagnosis_fields(result)}
+            yield f"data: {json.dumps(answer, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(gen(), media_type="text/event-stream")

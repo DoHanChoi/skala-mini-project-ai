@@ -1,4 +1,4 @@
-"""A-03 진단 입력·검증 결과 계약. 아직 라이브 그래프의 출력 계약은 아니다."""
+"""A-03 진단 입력·검증 결과 계약. A-04부터 v2 장애 그래프에서 사용한다."""
 from math import isfinite
 from typing import Literal
 
